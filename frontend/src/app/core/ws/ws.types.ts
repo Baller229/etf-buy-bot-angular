@@ -48,16 +48,15 @@ export type DataSnapshotPayload = {
 
 export type RangePreset = '1H' | '1D' | '1W' | '1M' | '1Y' | 'MAX';
 
+export type RangeFilter =
+  | { preset: 'MAX' }
+  | { preset: Exclude<RangePreset, 'MAX'>; anchorDateTime: string; leftSteps: number; rightSteps: number };
+
 export type ApplyFilterPayload = {
-  symbols: string[];
-  y1Key: string | null;
-  y2Key: string | null;
-  range?: {
-    preset: RangePreset;
-    anchorIso: string;
-    leftSteps: number;
-    rightSteps: number;
-  };
+  rowIds: string[];
+  y1: string | null;
+  y2: string | null;
+  range: RangeFilter;
 };
 
 export type WsEnvelope = {

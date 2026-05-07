@@ -18,10 +18,10 @@
 
     <div class="tab-content" [class.fullscreen]="chartFullscreen()">
       @if (activeTab() === 'chart') {
-        <p class="placeholder">Chart — coming soon</p>
+        <app-chart-tab [fullscreen]="chartFullscreen()" />
       }
       @if (activeTab() === 'table') {
-        <p class="placeholder">Table — coming soon</p>
+        <app-table-tab />
       }
       @if (activeTab() === 'settings') {
         <p class="placeholder">Settings — coming soon</p>

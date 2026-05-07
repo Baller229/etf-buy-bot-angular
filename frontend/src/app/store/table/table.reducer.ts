@@ -24,11 +24,20 @@ const initialState: TableState = {
 
 export const tableReducer = createReducer(
   initialState,
-  on(TableActions.initTable, (state, { payload }) => ({
-    ...state,
-    columns: payload.columns,
-    rows: payload.rows,
-  })),
+  on(TableActions.initTable, (state, { payload }) => {
+    const colKeys = new Set(payload.columns.map(c => c.key));
+    const rowIds = new Set(payload.rows.map(r => r.id));
+    const nextY1 = state.y1Key && colKeys.has(state.y1Key) ? state.y1Key : null;
+    const nextY2 = state.y2Key && colKeys.has(state.y2Key) && state.y2Key !== nextY1 ? state.y2Key : null;
+    return {
+      ...state,
+      columns: payload.columns,
+      rows: payload.rows,
+      y1Key: nextY1,
+      y2Key: nextY2,
+      selectedRowIds: state.selectedRowIds.filter(id => rowIds.has(id)),
+    };
+  }),
   on(TableActions.toggleRowSelection, (state, { id }) => {
     const exists = state.selectedRowIds.includes(id);
     return {

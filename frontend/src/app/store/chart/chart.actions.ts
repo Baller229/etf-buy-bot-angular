@@ -7,5 +7,6 @@ export const ChartActions = createActionGroup({
     'Snapshot Received': props<{ payload: DataSnapshotPayload }>(),
     'Toggle Series Visibility': props<{ key: string }>(),
     'Show All Series': emptyProps(),
+    'Set Hidden Series Keys': props<{ keys: string[] }>(),
   },
 });

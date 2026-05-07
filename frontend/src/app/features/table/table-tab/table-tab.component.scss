@@ -1,0 +1,140 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.empty-state {
+  padding: 16px;
+}
+
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.empty-body {
+  opacity: 0.75;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.chips-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &::-webkit-scrollbar { height: 6px; }
+}
+
+.table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ─── Header cells ───────────────────────────────────────────────────────────
+
+.head-cell {
+  background-color: var(--mat-sys-surface-container-low);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 4px 8px;
+  font-size: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+.sel-col.head-cell {
+  z-index: 6;
+}
+
+.sticky-first.head-cell {
+  z-index: 5;
+}
+
+.head-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sort-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.col-label {
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.sort-icon {
+  width: 14px;
+  font-size: 10px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+
+  &.active {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &.active.desc {
+    transform: rotate(180deg);
+  }
+}
+
+// ─── Body cells ─────────────────────────────────────────────────────────────
+
+.body-cell {
+  white-space: nowrap;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  padding: 8px;
+  font-size: 12px;
+}
+
+.num-cell {
+  text-align: right;
+}
+
+// ─── Rows ────────────────────────────────────────────────────────────────────
+
+.mat-mdc-row {
+  cursor: pointer;
+  background-color: var(--mat-sys-surface);
+
+  &.zebra {
+    background-color: var(--mat-sys-surface-container-lowest);
+  }
+
+  &.selected {
+    background-color: var(--mat-sys-secondary-container);
+  }
+
+  &:hover:not(.selected) {
+    background-color: var(--mat-sys-surface-container);
+  }
+}
+
+// Sticky cells need a solid background (no transparency)
+.mat-mdc-row .mat-mdc-cell[class*="sticky"] {
+  background-color: inherit;
+}

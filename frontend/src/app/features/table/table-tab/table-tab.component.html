@@ -1,0 +1,75 @@
+@if (!hasData()) {
+  <div class="empty-state">
+    <p class="empty-title">Table Filter</p>
+    <p class="empty-body">Čakám na INIT_TABLE z backendu…</p>
+  </div>
+} @else {
+
+  <div class="chips-bar">
+    <mat-chip-set>
+      <mat-chip>{{ selectedRowIds().length }}/{{ allRowIds().length }}</mat-chip>
+      <mat-chip>Y1: {{ y1Label() }}</mat-chip>
+      <mat-chip>Y2: {{ y2Label() }}</mat-chip>
+    </mat-chip-set>
+  </div>
+
+  <div class="table-scroll">
+    <table mat-table [dataSource]="sortedRows()" [trackBy]="rowTrackBy"
+           [style.min-width.px]="isMobile() ? 700 : 900">
+
+      <!-- Selection column -->
+      <ng-container matColumnDef="__select" sticky>
+        <th mat-header-cell *matHeaderCellDef class="sel-col head-cell"
+            [style.width.px]="selColW()" [style.min-width.px]="selColW()">
+          <mat-checkbox
+            [checked]="allSelected()"
+            [indeterminate]="someSelected()"
+            (change)="onToggleAll()" />
+        </th>
+        <td mat-cell *matCellDef="let row" class="sel-col body-cell"
+            [style.width.px]="selColW()" [style.min-width.px]="selColW()"
+            (click)="$event.stopPropagation()">
+          <mat-checkbox [checked]="isSelected(row.id)" (change)="onToggleRow(row.id)" />
+        </td>
+      </ng-container>
+
+      <!-- Dynamic data columns -->
+      @for (col of columns(); track col.key) {
+        <ng-container [matColumnDef]="col.key" [sticky]="isFirstCol(col.key)">
+          <th mat-header-cell *matHeaderCellDef class="head-cell"
+              [class.num-cell]="isNumeric(col.key)"
+              [class.sticky-first]="isFirstCol(col.key)"
+              [style.min-width.px]="isFirstCol(col.key) ? firstColW() : null"
+              [style.max-width.px]="isFirstCol(col.key) ? firstColW() : null">
+            <div class="head-inner">
+              <mat-checkbox
+                [checked]="isAxisCol(col.key)"
+                (change)="onToggleAxis(col.key)" />
+              <button class="sort-btn" (click)="handleSort(col.key)">
+                <span class="col-label">{{ col.label }}</span>
+                <span class="sort-icon"
+                      [class.active]="sortKey() === col.key"
+                      [class.desc]="sortKey() === col.key && sortDir() === 'desc'">▲</span>
+              </button>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let row" class="body-cell"
+              [class.num-cell]="isNumeric(col.key)"
+              [class.sticky-first]="isFirstCol(col.key)"
+              [style.min-width.px]="isFirstCol(col.key) ? firstColW() : null"
+              [style.max-width.px]="isFirstCol(col.key) ? firstColW() : null">
+            {{ row[col.key] ?? '' }}
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true" class="header-row"></tr>
+      <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns();"
+          [class.selected]="isSelected(row.id)"
+          [class.zebra]="!even"
+          (click)="onToggleRow(row.id)"></tr>
+
+    </table>
+  </div>
+
+}

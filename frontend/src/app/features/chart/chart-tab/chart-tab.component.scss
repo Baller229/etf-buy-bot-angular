@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chart-tab-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.plot-area {
+  flex: 0 0 auto;
+  height: clamp(220px, 40dvh, 520px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.plot-fullscreen {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.empty-fullscreen {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 0 16px;
+}
+
+.empty-msg {
+  opacity: 0.75;
+  text-align: center;
+  font-size: 14px;
+
+  &.padded { padding: 0 8px; }
+}

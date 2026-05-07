@@ -1,0 +1,79 @@
+@if (!hasRows() || !hasY1() || !hasSnapshot()) {
+
+  @if (fullscreen()) {
+    <div class="empty-fullscreen">
+      <p class="empty-msg">
+        @if (!hasRows()) { Vyber aspoň 1 ETF riadok v Table Filter (otoč späť na výšku). }
+        @else if (!hasY1()) { Vyber aspoň 1 stĺpec (Y1) v Table (otoč späť na výšku). }
+        @else { Čakám na DATA_SNAPSHOT… }
+      </p>
+    </div>
+  } @else {
+    <app-chart-header-bar
+      [rowsCount]="selectedRowIds().length"
+      [y1Label]="y1Label()"
+      [y2Label]="y2Label()"
+      [hasY2]="!!y2Key()"
+      [y1On]="y1On()"
+      [y2On]="y2On()"
+      [actionLabel]="actionLabel()"
+      [actionVisible]="actionVisible()"
+      (toggleY1)="toggleAxisAll('y1')"
+      (toggleY2)="toggleAxisAll('y2')"
+      (action)="onLegendAction()" />
+
+    <p class="empty-msg padded">
+      @if (!hasRows()) { Vyber aspoň 1 ETF riadok v Table Filter. }
+      @else if (!hasY1()) { Vyber aspoň 1 stĺpec (Y1) checkboxom v hlavičke tabuľky. }
+      @else { Čakám na DATA_SNAPSHOT z backendu… }
+    </p>
+  }
+
+} @else if (fullscreen()) {
+
+  <div class="plot-fullscreen">
+    <app-chart-plot [data]="chartData()" [options]="chartOptions()" [slide]="slide()" />
+  </div>
+
+} @else {
+
+  <div class="chart-tab-layout">
+    <app-chart-header-bar
+      [rowsCount]="selectedRowIds().length"
+      [y1Label]="y1Label()"
+      [y2Label]="y2Label()"
+      [hasY2]="!!y2Key()"
+      [y1On]="y1On()"
+      [y2On]="y2On()"
+      [actionLabel]="actionLabel()"
+      [actionVisible]="actionVisible()"
+      (toggleY1)="toggleAxisAll('y1')"
+      (toggleY2)="toggleAxisAll('y2')"
+      (action)="onLegendAction()" />
+
+    <div class="plot-area">
+      <app-chart-plot [data]="chartData()" [options]="chartOptions()" [slide]="slide()" />
+    </div>
+
+    <app-chart-footer
+      [legendItems]="legendItems()"
+      [preset]="rangePreset()"
+      [anchorDateTimeLocal]="anchorDateTimeLocal()"
+      [leftSteps]="leftSteps()"
+      [rightSteps]="rightSteps()"
+      [minAnchorLocal]="minAnchorLocal()"
+      [maxAnchorLocal]="maxAnchorLocal()"
+      [leftPlusDisabled]="leftPlusDisabled()"
+      [rightPlusDisabled]="rightPlusDisabled()"
+      (toggleLegend)="onToggleLegend($event)"
+      (presetChange)="onPresetChange($event)"
+      (anchorChange)="onAnchorChange($event)"
+      (incLeft)="onIncLeft()"
+      (decLeft)="onDecLeft()"
+      (setLeft)="onSetLeft($event)"
+      (incRight)="onIncRight()"
+      (decRight)="onDecRight()"
+      (setRight)="onSetRight($event)" />
+  </div>
+
+}

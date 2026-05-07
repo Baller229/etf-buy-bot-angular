@@ -25,4 +25,5 @@ export const chartReducer = createReducer(
     };
   }),
   on(ChartActions.showAllSeries, state => ({ ...state, hiddenSeriesKeys: [] })),
+  on(ChartActions.setHiddenSeriesKeys, (state, { keys }) => ({ ...state, hiddenSeriesKeys: keys })),
 );
