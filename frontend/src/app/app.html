@@ -1,1 +1,53 @@
-<p>etf-buy-bot</p>
+<div class="app-shell">
+
+  @if (!chartFullscreen()) {
+    <mat-divider />
+
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel"
+         [class.full-width]="isSmall()"
+         aria-label="Main navigation">
+      <a mat-tab-link [active]="activeTab() === 'chart'"    (click)="setTab('chart')">Chart</a>
+      <a mat-tab-link [active]="activeTab() === 'table'"    (click)="setTab('table')">Table</a>
+      <a mat-tab-link [active]="activeTab() === 'settings'" (click)="setTab('settings')">Settings</a>
+    </nav>
+
+    <mat-divider />
+  }
+
+  <mat-tab-nav-panel #tabPanel class="content-area" [class.with-inspector]="showInspector()">
+
+    <div class="tab-content" [class.fullscreen]="chartFullscreen()">
+      @if (activeTab() === 'chart') {
+        <p class="placeholder">Chart — coming soon</p>
+      }
+      @if (activeTab() === 'table') {
+        <p class="placeholder">Table — coming soon</p>
+      }
+      @if (activeTab() === 'settings') {
+        <p class="placeholder">Settings — coming soon</p>
+      }
+    </div>
+
+    @if (showInspector()) {
+      <div class="ws-inspector">
+        <p class="inspector-title">WS Inspector</p>
+        <div class="inspector-log">
+          @if (wsLogs().length === 0) {
+            <span class="empty">No WS logs yet.</span>
+          } @else {
+            @for (log of wsLogs(); track log.ts) {
+              <div class="log-entry">
+                <div class="log-head">
+                  [{{ formatLogTime(log.ts) }}] {{ log.dir }}{{ log.type ? ':' + log.type : '' }}
+                </div>
+                <div class="log-body">{{ log.text }}</div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+  </mat-tab-nav-panel>
+
+</div>

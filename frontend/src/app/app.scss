@@ -1,0 +1,107 @@
+.app-shell {
+  height: calc(var(--app-vh, 1vh) * 100);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+nav[mat-tab-nav-bar] {
+  min-height: 44px;
+
+  &.full-width {
+    width: 100%;
+
+    a[mat-tab-link] {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+}
+
+.content-area {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+
+  &.with-inspector {
+    @media (min-width: 960px) {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+}
+
+.tab-content {
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 600px) {
+    padding: 16px;
+  }
+
+  &.fullscreen {
+    padding: 0;
+  }
+
+  .placeholder {
+    padding: 16px;
+    opacity: 0.5;
+  }
+}
+
+.ws-inspector {
+  border-left: 1px solid var(--mat-sys-outline-variant);
+  padding: 16px;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 959px) {
+    border-left: none;
+  }
+}
+
+.inspector-title {
+  font-weight: 800;
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+}
+
+.inspector-log {
+  flex: 1;
+  min-height: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 12px;
+  background-color: var(--mat-sys-surface-container);
+}
+
+.empty {
+  opacity: 0.7;
+}
+
+.log-entry {
+  margin-bottom: 8px;
+}
+
+.log-head {
+  opacity: 0.7;
+}
+
+.log-body {
+  word-break: break-all;
+}

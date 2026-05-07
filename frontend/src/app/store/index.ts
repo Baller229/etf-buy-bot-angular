@@ -8,7 +8,7 @@ import { rangeReducer } from './range/range.reducer';
 import { chartReducer } from './chart/chart.reducer';
 import { uiReducer } from './ui/ui.reducer';
 
-export { AppState } from './app.state';
+export type { AppState } from './app.state';
 
 export * from './ws/ws.actions';
 export * from './ws/ws.selectors';
