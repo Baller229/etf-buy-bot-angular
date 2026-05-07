@@ -30,6 +30,7 @@ import type { ActiveTab } from './store';
 import { WsService } from './core/ws/ws.service';
 import { TableTabComponent } from './features/table';
 import { ChartTabComponent } from './features/chart';
+import { SettingsTabComponent } from './features/settings';
 import type { WsLogEntry } from './core/ws/ws.types';
 
 const LANDSCAPE_LOW_H = '(orientation: landscape) and (max-height: 520px)';
@@ -37,7 +38,7 @@ const COARSE = '(pointer: coarse)';
 
 @Component({
   selector: 'app-root',
-  imports: [MatTabsModule, MatDividerModule, TableTabComponent, ChartTabComponent],
+  imports: [MatTabsModule, MatDividerModule, TableTabComponent, ChartTabComponent, SettingsTabComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
