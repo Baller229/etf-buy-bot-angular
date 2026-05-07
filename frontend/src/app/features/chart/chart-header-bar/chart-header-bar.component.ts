@@ -5,43 +5,39 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-chart-header-bar',
-  imports: [MatChipsModule],
+  imports: [],
   template: `
     <div class="header-bar">
       <div class="chips-row">
-        <mat-chip-set>
-          <mat-chip>{{ rowsCount }}</mat-chip>
+        <span class="chip">{{ rowsCount }}</span>
 
-          <mat-chip
-            [class.chip-off]="!y1On"
-            (click)="toggleY1.emit()">
-            Y1: {{ y1Label }}
-          </mat-chip>
+        <span class="chip chip-btn" [class.chip-off]="!y1On"
+              (click)="toggleY1.emit()">
+          Y1: {{ y1Label }}
+        </span>
 
-          <mat-chip
-            [class.chip-off]="hasY2 ? !y2On : true"
-            [class.chip-disabled]="!hasY2"
-            (click)="hasY2 && toggleY2.emit()">
-            Y2: {{ hasY2 ? y2Label : '—' }}
-          </mat-chip>
+        <span class="chip chip-btn"
+              [class.chip-off]="hasY2 ? !y2On : true"
+              [class.chip-disabled]="!hasY2"
+              (click)="hasY2 && toggleY2.emit()">
+          Y2: {{ hasY2 ? y2Label : '—' }}
+        </span>
 
-          @if (actionVisible) {
-            <mat-chip (click)="action.emit()">{{ actionLabel }}</mat-chip>
-          }
-        </mat-chip-set>
+        @if (actionVisible) {
+          <span class="chip chip-btn" (click)="action.emit()">{{ actionLabel }}</span>
+        }
       </div>
     </div>
   `,
   styles: [`
-    .header-bar { overflow-x: auto; overflow-y: hidden; text-align: center; padding: 6px 0; }
+    :host { display: block; flex: 0 0 auto; }
+    .header-bar { overflow-x: auto; overflow-y: hidden; padding: 6px 8px; }
     .header-bar::-webkit-scrollbar { height: 6px; }
-    .chips-row { display: inline-flex; width: fit-content; }
-    mat-chip-set { flex-wrap: nowrap; white-space: nowrap; }
-    mat-chip { cursor: pointer; }
+    .chips-row { display: flex; justify-content: center; gap: 6px; flex-wrap: nowrap; white-space: nowrap; }
+    .chip-btn { cursor: pointer; user-select: none; }
     .chip-off { opacity: 0.55; }
     .chip-disabled { opacity: 0.35; cursor: default; }
   `],

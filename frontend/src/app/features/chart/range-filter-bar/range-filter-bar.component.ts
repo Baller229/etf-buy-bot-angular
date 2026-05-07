@@ -14,7 +14,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -37,17 +36,18 @@ function formatAnchorDisplay(anchorLocal: string): string {
 
 @Component({
   selector: 'app-range-filter-bar',
-  imports: [FormsModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatInputModule],
+  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule],
   template: `
     <div class="bar-wrap">
 
       <!-- Row 1: presets -->
       <div class="preset-row">
-        <mat-button-toggle-group [value]="preset" (change)="presetChange.emit($event.value)">
+        <div class="preset-group">
           @for (p of presets; track p) {
-            <mat-button-toggle [value]="p" class="preset-btn">{{ p }}</mat-button-toggle>
+            <button class="preset-btn" [class.active]="preset === p"
+                    (click)="presetChange.emit(p)">{{ p }}</button>
           }
-        </mat-button-toggle-group>
+        </div>
       </div>
 
       <!-- Row 2: left steps | anchor | right steps -->
@@ -114,20 +114,34 @@ function formatAnchorDisplay(anchorLocal: string): string {
     }
     .preset-row {
       width: 100%;
-      display: flex;
-      justify-content: center;
     }
-    mat-button-toggle-group {
-      width: 100%;
+    .preset-group {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 4px;
+      width: 100%;
     }
     .preset-btn {
-      width: 100%;
-      min-width: 0;
+      all: unset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 4px;
       font-size: 12px;
-      line-height: 1;
+      cursor: pointer;
+      background: transparent;
+      color: var(--mat-sys-on-surface);
+      transition: background 120ms, border-color 120ms;
+      box-sizing: border-box;
+    }
+    .preset-btn.active {
+      background: color-mix(in srgb, var(--mat-sys-primary) 12%, var(--mat-sys-surface));
+      border-color: color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+    }
+    .preset-btn:hover:not(.active) {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
     }
     .controls-row {
       width: 100%;

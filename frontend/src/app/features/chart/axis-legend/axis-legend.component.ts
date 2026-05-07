@@ -78,16 +78,17 @@ function stripAxisSuffix(label: string): string {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--mat-divider-color, rgba(0,0,0,.12));
-      background: var(--mat-app-surface, transparent);
+      padding: 4px 10px 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      background: var(--mat-sys-surface-container);
       cursor: pointer;
       user-select: none;
-      transition: opacity 120ms;
+      transition: background 120ms, opacity 120ms;
       font-size: 12px;
-      color: inherit;
+      color: var(--mat-sys-on-surface);
     }
+    .legend-item:hover { background: var(--mat-sys-surface-container-high); }
     .legend-item.hidden { opacity: 0.35; }
     .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
   `],

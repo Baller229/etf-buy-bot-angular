@@ -4,7 +4,7 @@
     <mat-divider />
 
     <nav mat-tab-nav-bar [tabPanel]="tabPanel"
-         [class.full-width]="isSmall()"
+         [mat-stretch-tabs]="isSmall()"
          aria-label="Main navigation">
       <a mat-tab-link [active]="activeTab() === 'chart'"    (click)="setTab('chart')">Chart</a>
       <a mat-tab-link [active]="activeTab() === 'table'"    (click)="setTab('table')">Table</a>

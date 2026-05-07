@@ -10,7 +10,6 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
@@ -62,7 +61,7 @@ function normalizeColumns(cols: TableColumn[]): TableColumn[] {
 
 @Component({
   selector: 'app-table-tab',
-  imports: [MatTableModule, MatCheckboxModule, MatChipsModule],
+  imports: [MatTableModule, MatCheckboxModule],
   templateUrl: './table-tab.component.html',
   styleUrl: './table-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

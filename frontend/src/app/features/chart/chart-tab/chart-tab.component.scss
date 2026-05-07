@@ -15,10 +15,15 @@
 }
 
 .plot-area {
-  flex: 0 0 auto;
-  height: clamp(220px, 40dvh, 520px);
-  min-height: 0;
+  flex: 1;
+  min-height: 220px;
   overflow: hidden;
+
+  @media (max-width: 599px) {
+    flex: 0 0 auto;
+    height: clamp(240px, 45vh, 400px);
+    min-height: 0;
+  }
 }
 
 .plot-fullscreen {

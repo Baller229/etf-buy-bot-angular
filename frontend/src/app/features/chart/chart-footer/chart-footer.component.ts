@@ -37,7 +37,8 @@ import type { RangePreset } from '../../../core/ws/ws.types';
     </div>
   `,
   styles: [`
-    .footer { margin-top: 8px; padding-bottom: 8px; }
+    :host { display: block; flex: 0 0 auto; }
+    .footer { padding: 6px 0 10px; }
     .range-wrap { margin-top: 8px; display: flex; justify-content: center; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

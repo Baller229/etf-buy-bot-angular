@@ -31,3 +31,49 @@ body {
   overflow: hidden;
   overscroll-behavior-y: none;
 }
+
+// Center tab links when tabs are not stretched (PC)
+.mat-mdc-tab-nav-bar:not(.mat-mdc-tab-nav-bar-stretch-tabs) .mat-mdc-tab-links {
+  justify-content: center;
+}
+
+// Tab link label style
+.mat-mdc-tab-nav-bar .mdc-tab__text-label {
+  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  font-size: 13px;
+}
+
+// Prevent text cursor and selection on tab links
+.mat-mdc-tab-nav-bar a[mat-tab-link] {
+  user-select: none;
+  cursor: pointer;
+}
+
+// Active tab text color matches the indicator bar
+.mat-mdc-tab-nav-bar a[mat-tab-link].mdc-tab--active .mdc-tab__text-label {
+  color: var(--mat-sys-primary);
+}
+
+// Shared chip styles — used by table-tab and chart-header-bar
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.chip-outline {
+  background: transparent;
+  border: 1px solid var(--mat-sys-outline);
+}

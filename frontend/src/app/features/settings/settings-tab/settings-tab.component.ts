@@ -32,7 +32,7 @@ import { UiActions, selectDarkMode, selectShowWsInspector } from '../../../store
     </div>
   `,
   styles: [`
-    .settings { display: flex; flex-direction: column; gap: 16px; }
+    .settings { display: flex; flex-direction: column; gap: 16px; padding: 16px; }
     .title { font-size: 1.125rem; font-weight: 800; margin: 0 0 4px; }
     mat-divider { margin: 0; }
   `],

@@ -6,15 +6,14 @@
 } @else {
 
   <div class="chips-bar">
-    <mat-chip-set>
-      <mat-chip>{{ selectedRowIds().length }}/{{ allRowIds().length }}</mat-chip>
-      <mat-chip>Y1: {{ y1Label() }}</mat-chip>
-      <mat-chip>Y2: {{ y2Label() }}</mat-chip>
-    </mat-chip-set>
+    <span class="chip">{{ selectedRowIds().length }}/{{ allRowIds().length }}</span>
+    <span class="chip chip-outline">Y1: {{ y1Label() }}</span>
+    <span class="chip chip-outline">Y2: {{ y2Label() }}</span>
   </div>
 
   <div class="table-scroll">
     <table mat-table [dataSource]="sortedRows()" [trackBy]="rowTrackBy"
+           style="width: 100%"
            [style.min-width.px]="isMobile() ? 700 : 900">
 
       <!-- Selection column -->

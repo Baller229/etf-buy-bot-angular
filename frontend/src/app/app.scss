@@ -9,15 +9,6 @@
 
 nav[mat-tab-nav-bar] {
   min-height: 44px;
-
-  &.full-width {
-    width: 100%;
-
-    a[mat-tab-link] {
-      flex: 1;
-      justify-content: center;
-    }
-  }
 }
 
 .content-area {
@@ -32,6 +23,7 @@ nav[mat-tab-nav-bar] {
       grid-template-columns: 1.4fr 1fr;
     }
   }
+
 }
 
 .tab-content {
