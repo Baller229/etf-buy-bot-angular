@@ -43,6 +43,11 @@
   overflow: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 599px) {
+    --mat-table-row-item-container-height: 32px;
+    --mat-table-header-container-height: 28px;
+  }
 }
 
 // ─── Header cells ───────────────────────────────────────────────────────────
@@ -57,6 +62,11 @@
   position: sticky;
   top: 0;
   z-index: 4;
+
+  @media (max-width: 599px) {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
 }
 
 .sel-col.head-cell {
@@ -87,6 +97,8 @@
 .col-label {
   font-weight: 500;
   font-size: 12px;
+
+  @media (max-width: 599px) { font-size: 11px; }
 }
 
 .sort-icon {
@@ -113,6 +125,8 @@
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   padding: 6px 8px;
   font-size: 12px;
+
+  @media (max-width: 599px) { padding: 4px 8px; }
 }
 
 .num-cell {

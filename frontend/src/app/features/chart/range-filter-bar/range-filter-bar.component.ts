@@ -104,6 +104,7 @@ function formatAnchorDisplay(anchorLocal: string): string {
     </div>
   `,
   styles: [`
+    :host { display: block; width: 100%; }
     .bar-wrap {
       width: 100%;
       max-width: 560px;
@@ -111,6 +112,8 @@ function formatAnchorDisplay(anchorLocal: string): string {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      box-sizing: border-box;
+      padding: 0 16px;
     }
     .preset-row {
       width: 100%;
@@ -203,6 +206,22 @@ function formatAnchorDisplay(anchorLocal: string): string {
       font-size: 11px;
       opacity: 0.7;
       margin: 0;
+    }
+    @media (max-width: 599px) {
+      .anchor-btn { font-size: 11px; }
+      .step-input { width: 36px; font-size: 11px; padding: 6px 2px; }
+      :host ::ng-deep .mat-mdc-icon-button {
+        --mdc-icon-button-state-layer-size: 28px;
+        width: 28px !important;
+        height: 28px !important;
+        padding: 2px !important;
+      }
+      :host ::ng-deep .mat-mdc-icon-button .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
