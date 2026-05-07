@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   Chart,
+  LineController,
   LineElement,
   PointElement,
   LinearScale,
@@ -21,7 +22,7 @@ import {
 } from 'chart.js';
 import { verticalLinePlugin, cursorTrackerPlugin } from '../../../core/utils/chart-plugins';
 
-Chart.register(LineElement, PointElement, LinearScale, Tooltip, Legend, verticalLinePlugin, cursorTrackerPlugin);
+Chart.register(LineController, LineElement, PointElement, LinearScale, Tooltip, Legend, verticalLinePlugin, cursorTrackerPlugin);
 
 @Component({
   selector: 'app-chart-plot',
