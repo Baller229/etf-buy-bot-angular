@@ -1,0 +1,45 @@
+# Node — matches node_modules/ in frontend/ and middleware/
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular build output
+dist/
+.angular/
+out-tsc/
+bazel-out/
+
+# Test
+coverage/
+__screenshots__/
+testem.log
+
+# IDEs
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VS Code — keep shareable config
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/
+
+# System
+.DS_Store
+Thumbs.db
+Thumbs.db:encryptable
+
+# Misc
+tmp/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+typings/
