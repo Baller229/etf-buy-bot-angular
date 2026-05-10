@@ -6,10 +6,18 @@
     <nav mat-tab-nav-bar [tabPanel]="tabPanel"
          [mat-stretch-tabs]="isSmall()"
          aria-label="Main navigation">
-      <a mat-tab-link [active]="activeTab() === 'wallet'" (click)="setTab('wallet')">Wallet</a>
-      <a mat-tab-link [active]="activeTab() === 'chart'"     (click)="setTab('chart')">Chart</a>
-      <a mat-tab-link [active]="activeTab() === 'table'"     (click)="setTab('table')">Table</a>
-      <a mat-tab-link [active]="activeTab() === 'settings'"  (click)="setTab('settings')">Settings</a>
+      <a mat-tab-link [active]="activeTab() === 'wallet'" (click)="setTab('wallet')">
+        <span class="tab-label"><mat-icon class="tab-icon">account_balance_wallet</mat-icon>Wallet</span>
+      </a>
+      <a mat-tab-link [active]="activeTab() === 'chart'" (click)="setTab('chart')">
+        <span class="tab-label"><mat-icon class="tab-icon">show_chart</mat-icon>Chart</span>
+      </a>
+      <a mat-tab-link [active]="activeTab() === 'table'" (click)="setTab('table')">
+        <span class="tab-label"><mat-icon class="tab-icon">table_chart</mat-icon>Table</span>
+      </a>
+      <a mat-tab-link [active]="activeTab() === 'settings'" (click)="setTab('settings')">
+        <span class="tab-label"><mat-icon class="tab-icon">settings</mat-icon>Settings</span>
+      </a>
     </nav>
 
     <mat-divider />

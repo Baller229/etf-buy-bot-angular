@@ -18,8 +18,10 @@
       [y2On]="y2On()"
       [actionLabel]="actionLabel()"
       [actionVisible]="actionVisible()"
+      [splitMode]="splitMode()"
       (toggleY1)="toggleAxisAll('y1')"
       (toggleY2)="toggleAxisAll('y2')"
+      (toggleSplit)="onToggleSplit()"
       (action)="onLegendAction()" />
 
     <p class="empty-msg padded">
@@ -47,8 +49,10 @@
       [y2On]="y2On()"
       [actionLabel]="actionLabel()"
       [actionVisible]="actionVisible()"
+      [splitMode]="splitMode()"
       (toggleY1)="toggleAxisAll('y1')"
       (toggleY2)="toggleAxisAll('y2')"
+      (toggleSplit)="onToggleSplit()"
       (action)="onLegendAction()" />
 
     <div class="plot-area">

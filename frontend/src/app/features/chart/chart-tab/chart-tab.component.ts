@@ -76,6 +76,9 @@ export class ChartTabComponent implements OnInit, OnDestroy {
   readonly isMobile = signal(false);
   readonly showAxes = computed(() => !this.isMobile() || this.fullscreen());
 
+  // Split mode — merge Y2 onto Y1 axis with dashed lines
+  readonly splitMode = signal(false);
+
   // Dark mode — read from documentElement class (effects set it in AppComponent)
   readonly darkMode = signal(document.documentElement.classList.contains('dark'));
 
@@ -145,6 +148,7 @@ export class ChartTabComponent implements OnInit, OnDestroy {
     const y1Label = this.y1Label();
     const y2Label = this.y2Label();
     const nameMap = this.nameBySymbol();
+    const split = this.splitMode();
 
     if (!snap?.series?.length) {
       return { datasets: [] as ChartDataset[], legendItems: [] as LegendItem[] };
@@ -172,7 +176,8 @@ export class ChartTabComponent implements OnInit, OnDestroy {
           label: `${displayName} • ${y1Label}`,
           yAxisID: 'y1', data, parsing: false,
           borderColor: color, backgroundColor: color,
-          borderWidth: 2, pointRadius: 0, spanGaps: true,
+          borderWidth: 2, borderDash: [],
+          pointRadius: 0, spanGaps: true,
           hidden: hidden.has(k),
           _symbol: s.symbol, _displayName: displayName, _axis: 'y1',
         } as ChartDataset);
@@ -186,9 +191,10 @@ export class ChartTabComponent implements OnInit, OnDestroy {
         const data = times.map((t, i) => ({ x: i, y: ptMap.get(t) ?? null, t }));
         datasets.push({
           label: `${displayName} • ${y2Label}`,
-          yAxisID: 'y2', data, parsing: false,
+          yAxisID: split ? 'y1' : 'y2', data, parsing: false,
           borderColor: color, backgroundColor: color,
-          borderWidth: 2, pointRadius: 0, spanGaps: true,
+          borderWidth: 2, borderDash: split ? [6, 4] : [],
+          pointRadius: 0, spanGaps: true,
           hidden: hidden.has(k),
           _symbol: s.symbol, _displayName: displayName, _axis: 'y2',
         } as ChartDataset);
@@ -233,6 +239,7 @@ export class ChartTabComponent implements OnInit, OnDestroy {
     const y2Label = this.y2Label();
     const snap = this.snapshot();
     const isMobile = this.isMobile();
+    const split = this.splitMode();
     const maxX = Math.max(0, times.length - 1);
     const gridColor = dark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.10)';
     const tooltipBg = dark ? 'rgba(28,28,38,0.72)' : 'rgba(255,255,255,0.72)';
@@ -348,7 +355,7 @@ export class ChartTabComponent implements OnInit, OnDestroy {
           ticks: { display: showAxes },
           grid: { drawOnChartArea: true, color: gridColor },
         },
-        ...(snap?.y2Key ? {
+        ...(snap?.y2Key && !split ? {
           y2: {
             type: 'linear' as const, position: 'right' as const, grace: '6%',
             display: showAxes,
@@ -429,6 +436,8 @@ export class ChartTabComponent implements OnInit, OnDestroy {
     }
   }
 
+  onToggleSplit(): void { this.splitMode.update(v => !v); }
+
   onToggleLegend(key: string): void {
     this.store.dispatch(ChartActions.toggleSeriesVisibility({ key }));
   }
@@ -458,6 +467,7 @@ interface ChartDataset {
   borderColor: string;
   backgroundColor: string;
   borderWidth: number;
+  borderDash: number[];
   pointRadius: number;
   spanGaps: boolean;
   hidden: boolean;

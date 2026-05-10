@@ -26,6 +26,9 @@ import {
           Y2: {{ hasY2 ? y2Label : '—' }}
         </span>
 
+        <span class="chip chip-btn" [class.chip-off]="!splitMode"
+              (click)="toggleSplit.emit()">Split</span>
+
         @if (actionVisible) {
           <span class="chip chip-btn" (click)="action.emit()">{{ actionLabel }}</span>
         }
@@ -52,8 +55,10 @@ export class ChartHeaderBarComponent {
   @Input() y2On = false;
   @Input() actionLabel: 'Show all' | 'Clear all' = 'Clear all';
   @Input() actionVisible = false;
+  @Input() splitMode = false;
 
   @Output() toggleY1 = new EventEmitter<void>();
   @Output() toggleY2 = new EventEmitter<void>();
+  @Output() toggleSplit = new EventEmitter<void>();
   @Output() action = new EventEmitter<void>();
 }

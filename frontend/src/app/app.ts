@@ -14,6 +14,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { DOCUMENT } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Store } from '@ngrx/store';
 import {
@@ -40,7 +41,7 @@ const COARSE = '(pointer: coarse)';
 
 @Component({
   selector: 'app-root',
-  imports: [MatTabsModule, MatDividerModule, PortfolioTabComponent, TableTabComponent, ChartTabComponent, SettingsTabComponent],
+  imports: [MatTabsModule, MatDividerModule, MatIconModule, PortfolioTabComponent, TableTabComponent, ChartTabComponent, SettingsTabComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

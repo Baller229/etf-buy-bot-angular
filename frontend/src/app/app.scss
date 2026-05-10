@@ -11,6 +11,23 @@ nav[mat-tab-nav-bar] {
   min-height: 44px;
 }
 
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: none;
+
+  @media (min-width: 600px) {
+    display: inline-flex;
+  }
+}
+
 .content-area {
   flex: 1;
   min-height: 0;
