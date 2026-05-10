@@ -1,0 +1,41 @@
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import type { PortfolioState } from './portfolio.reducer';
+import type { RangePreset } from '../../core/ws/ws.types';
+
+const selectPortfolioState = createFeatureSelector<PortfolioState>('portfolio');
+
+export const selectPortfolioY1Key = createSelector(selectPortfolioState, s => s.y1Key);
+export const selectPortfolioY2Key = createSelector(selectPortfolioState, s => s.y2Key);
+export const selectPortfolioSplitMode = createSelector(selectPortfolioState, s => s.splitMode);
+export const selectPortfolioRangePreset = createSelector(selectPortfolioState, s => s.rangePreset);
+export const selectPortfolioAnchorDateTimeLocal = createSelector(selectPortfolioState, s => s.anchorDateTimeLocal);
+export const selectPortfolioLeftSteps = createSelector(selectPortfolioState, s => s.leftSteps);
+export const selectPortfolioRightSteps = createSelector(selectPortfolioState, s => s.rightSteps);
+export const selectPortfolioSnapshot = createSelector(selectPortfolioState, s => s.snapshot);
+
+export const selectPortfolioFilterPayload = createSelector(
+  selectPortfolioY1Key,
+  selectPortfolioY2Key,
+  selectPortfolioRangePreset,
+  selectPortfolioAnchorDateTimeLocal,
+  selectPortfolioLeftSteps,
+  selectPortfolioRightSteps,
+  (y1Key, y2Key, preset, anchorLocal, leftSteps, rightSteps) => {
+    if (preset !== 'MAX' && !anchorLocal) return null;
+    if (preset === 'MAX') {
+      return { y1Key, y2Key, range: { preset: 'MAX' as const } };
+    }
+    const d = new Date(anchorLocal);
+    if (isNaN(d.getTime())) return null;
+    return {
+      y1Key,
+      y2Key,
+      range: {
+        preset: preset as Exclude<RangePreset, 'MAX'>,
+        anchorDateTime: d.toISOString(),
+        leftSteps,
+        rightSteps,
+      },
+    };
+  },
+);

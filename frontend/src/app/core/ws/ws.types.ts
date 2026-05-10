@@ -5,6 +5,8 @@ export type WsMsgType =
   | 'INIT_TABLE'
   | 'APPLY_FILTER'
   | 'DATA_SNAPSHOT'
+  | 'PORTFOLIO_FILTER'
+  | 'PORTFOLIO_SNAPSHOT'
   | 'ERROR';
 
 export type WsStatus = 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED';
@@ -59,6 +61,25 @@ export type ApplyFilterPayload = {
   range: RangeFilter;
 };
 
+export type PortfolioSeries = {
+  key: string;
+  axis: 'y1' | 'y2';
+  points: Point[];
+};
+
+export type PortfolioSnapshotPayload = {
+  y1Key: string | null;
+  y2Key: string | null;
+  series: PortfolioSeries[];
+  rangeMeta: RangeMeta;
+};
+
+export type PortfolioFilterPayload = {
+  y1Key: string | null;
+  y2Key: string | null;
+  range: RangeFilter;
+};
+
 export type WsEnvelope = {
   wsMsgType: WsMsgType | string;
   requestId?: string;
@@ -66,6 +87,7 @@ export type WsEnvelope = {
   serverTime?: string;
   table?: InitTablePayload;
   snapshot?: DataSnapshotPayload;
+  portfolioSnapshot?: PortfolioSnapshotPayload;
   [k: string]: unknown;
 };
 

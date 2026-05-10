@@ -4,6 +4,7 @@ import type { WsEnvelope } from "../app/messages";
 import { Logger } from "../core/logger";
 import { InitTableService } from "../services/initTableService";
 import { DataSnapshotService } from "../services/dataSnapshotService";
+import { PortfolioSnapshotService } from "../services/portfolioSnapshotService";
 
 export class WsServer {
   private wss: WebSocketServer;
@@ -12,7 +13,8 @@ export class WsServer {
   constructor(
     private opts: { port: number; path: string },
     private initTableService: InitTableService,
-    private snapshotService: DataSnapshotService
+    private snapshotService: DataSnapshotService,
+    private portfolioSnapshotService: PortfolioSnapshotService
   ) {
     this.wss = new WebSocketServer({ port: opts.port, path: opts.path });
   }
@@ -110,6 +112,36 @@ export class WsServer {
               requestId: msg.requestId ?? randomUUID(),
               serverTime: new Date().toISOString(),
               message: "DATA_SNAPSHOT failed",
+              details: String(e),
+            });
+          }
+
+          return;
+        }
+
+        if (msg.wsMsgType === "PORTFOLIO_FILTER") {
+          const filter = (msg as any).filter as
+            | { y1Key?: unknown; y2Key?: unknown; range?: unknown }
+            | undefined;
+
+          const y1Key = filter?.y1Key ? String(filter.y1Key) : null;
+          const y2Key = filter?.y2Key ? String(filter.y2Key) : null;
+          const range = filter?.range as any | undefined;
+
+          try {
+            const portfolioSnapshot = this.portfolioSnapshotService.build(y1Key, y2Key, range);
+            this.send(socket, {
+              wsMsgType: "PORTFOLIO_SNAPSHOT",
+              requestId: msg.requestId ?? randomUUID(),
+              serverTime: new Date().toISOString(),
+              portfolioSnapshot,
+            });
+          } catch (e) {
+            this.send(socket, {
+              wsMsgType: "ERROR",
+              requestId: msg.requestId ?? randomUUID(),
+              serverTime: new Date().toISOString(),
+              message: "PORTFOLIO_SNAPSHOT failed",
               details: String(e),
             });
           }

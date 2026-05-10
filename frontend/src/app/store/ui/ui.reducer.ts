@@ -11,7 +11,7 @@ export interface UiState {
 const initialState: UiState = {
   darkMode: false,
   showWsInspector: false,
-  activeTab: 'chart',
+  activeTab: 'wallet',
 };
 
 export const uiReducer = createReducer(

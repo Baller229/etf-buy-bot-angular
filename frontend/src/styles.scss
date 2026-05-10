@@ -43,12 +43,22 @@ body {
   font-weight: 400;
   letter-spacing: 0.06em;
   font-size: 13px;
+
+  @media (max-width: 599px) {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
 }
 
 // Prevent text cursor and selection on tab links
 .mat-mdc-tab-nav-bar a[mat-tab-link] {
   user-select: none;
   cursor: pointer;
+
+  @media (max-width: 599px) {
+    min-width: 0;
+    padding: 0 8px;
+  }
 }
 
 // Active tab text color matches the indicator bar

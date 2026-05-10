@@ -9,6 +9,7 @@ import { tableReducer } from './table/table.reducer';
 import { rangeReducer } from './range/range.reducer';
 import { chartReducer } from './chart/chart.reducer';
 import { uiReducer } from './ui/ui.reducer';
+import { portfolioReducer } from './portfolio/portfolio.reducer';
 
 export type { AppState } from './app.state';
 
@@ -22,8 +23,11 @@ export * from './chart/chart.actions';
 export * from './chart/chart.selectors';
 export * from './ui/ui.actions';
 export * from './ui/ui.selectors';
+export * from './portfolio/portfolio.actions';
+export * from './portfolio/portfolio.selectors';
 
 export { WsEffects } from './ws/ws.effects';
+export { PortfolioEffects } from './portfolio/portfolio.effects';
 
 export const appReducers: ActionReducerMap<AppState> = {
   ws: wsReducer,
@@ -31,6 +35,7 @@ export const appReducers: ActionReducerMap<AppState> = {
   range: rangeReducer,
   chart: chartReducer,
   ui: uiReducer,
+  portfolio: portfolioReducer,
 };
 
 export function localStorageSyncReducer(
@@ -41,6 +46,7 @@ export function localStorageSyncReducer(
       { ui: ['darkMode', 'showWsInspector'] },
       { table: ['selectedRowIds', 'y1Key', 'y2Key'] },
       { range: ['rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
+      { portfolio: ['y1Key', 'y2Key', 'splitMode', 'rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
     ],
     rehydrate: true,
   })(reducer);

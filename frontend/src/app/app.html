@@ -1,14 +1,15 @@
 <div class="app-shell">
 
-  @if (!chartFullscreen()) {
+  @if (!tabFullscreen()) {
     <mat-divider />
 
     <nav mat-tab-nav-bar [tabPanel]="tabPanel"
          [mat-stretch-tabs]="isSmall()"
          aria-label="Main navigation">
-      <a mat-tab-link [active]="activeTab() === 'chart'"    (click)="setTab('chart')">Chart</a>
-      <a mat-tab-link [active]="activeTab() === 'table'"    (click)="setTab('table')">Table</a>
-      <a mat-tab-link [active]="activeTab() === 'settings'" (click)="setTab('settings')">Settings</a>
+      <a mat-tab-link [active]="activeTab() === 'wallet'" (click)="setTab('wallet')">Wallet</a>
+      <a mat-tab-link [active]="activeTab() === 'chart'"     (click)="setTab('chart')">Chart</a>
+      <a mat-tab-link [active]="activeTab() === 'table'"     (click)="setTab('table')">Table</a>
+      <a mat-tab-link [active]="activeTab() === 'settings'"  (click)="setTab('settings')">Settings</a>
     </nav>
 
     <mat-divider />
@@ -16,7 +17,10 @@
 
   <mat-tab-nav-panel #tabPanel class="content-area" [class.with-inspector]="showInspector()">
 
-    <div class="tab-content" [class.fullscreen]="chartFullscreen()">
+    <div class="tab-content" [class.fullscreen]="tabFullscreen()">
+      @if (activeTab() === 'wallet') {
+        <app-portfolio-tab [fullscreen]="portfolioFullscreen()" />
+      }
       @if (activeTab() === 'chart') {
         <app-chart-tab [fullscreen]="chartFullscreen()" />
       }

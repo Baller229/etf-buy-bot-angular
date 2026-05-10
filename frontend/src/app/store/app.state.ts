@@ -3,6 +3,7 @@ import type { TableState } from './table/table.reducer';
 import type { RangeState } from './range/range.reducer';
 import type { ChartState } from './chart/chart.reducer';
 import type { UiState } from './ui/ui.reducer';
+import type { PortfolioState } from './portfolio/portfolio.reducer';
 
 export interface AppState {
   ws: WsState;
@@ -10,4 +11,5 @@ export interface AppState {
   range: RangeState;
   chart: ChartState;
   ui: UiState;
+  portfolio: PortfolioState;
 }

@@ -20,6 +20,7 @@ import {
   WsActions,
   TableActions,
   ChartActions,
+  PortfolioActions,
   UiActions,
   selectActiveTab,
   selectDarkMode,
@@ -31,6 +32,7 @@ import { WsService } from './core/ws/ws.service';
 import { TableTabComponent } from './features/table';
 import { ChartTabComponent } from './features/chart';
 import { SettingsTabComponent } from './features/settings';
+import { PortfolioTabComponent } from './features/portfolio';
 import type { WsLogEntry } from './core/ws/ws.types';
 
 const LANDSCAPE_LOW_H = '(orientation: landscape) and (max-height: 520px)';
@@ -38,7 +40,7 @@ const COARSE = '(pointer: coarse)';
 
 @Component({
   selector: 'app-root',
-  imports: [MatTabsModule, MatDividerModule, TableTabComponent, ChartTabComponent, SettingsTabComponent],
+  imports: [MatTabsModule, MatDividerModule, PortfolioTabComponent, TableTabComponent, ChartTabComponent, SettingsTabComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +52,7 @@ export class App implements OnInit, OnDestroy {
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly activeTab = toSignal(this.store.select(selectActiveTab), { initialValue: 'chart' as ActiveTab });
+  readonly activeTab = toSignal(this.store.select(selectActiveTab), { initialValue: 'wallet' as ActiveTab });
   readonly darkMode = toSignal(this.store.select(selectDarkMode), { initialValue: false });
   readonly showWsInspector = toSignal(this.store.select(selectShowWsInspector), { initialValue: false });
   readonly wsLogs = toSignal(this.store.select(selectWsLogs), { initialValue: [] as WsLogEntry[] });
@@ -59,6 +61,8 @@ export class App implements OnInit, OnDestroy {
   readonly isSmall = signal(false);
 
   readonly chartFullscreen = computed(() => this.isPhoneLike() && this.activeTab() === 'chart');
+  readonly portfolioFullscreen = computed(() => this.isPhoneLike() && this.activeTab() === 'wallet');
+  readonly tabFullscreen = computed(() => this.chartFullscreen() || this.portfolioFullscreen());
   readonly showInspector = computed(() => this.showWsInspector() && !this.isPhoneLike());
 
   private readonly darkModeEffect = effect(() => {
@@ -127,6 +131,8 @@ export class App implements OnInit, OnDestroy {
           this.store.dispatch(TableActions.initTable({ payload: msg.table }));
         } else if (msg.wsMsgType === 'DATA_SNAPSHOT' && msg.snapshot) {
           this.store.dispatch(ChartActions.snapshotReceived({ payload: msg.snapshot }));
+        } else if (msg.wsMsgType === 'PORTFOLIO_SNAPSHOT' && msg.portfolioSnapshot) {
+          this.store.dispatch(PortfolioActions.snapshotReceived({ payload: msg.portfolioSnapshot }));
         }
       });
   }

@@ -1,6 +1,6 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
-export type ActiveTab = 'chart' | 'table' | 'settings';
+export type ActiveTab = 'wallet' | 'chart' | 'table' | 'settings';
 
 export const UiActions = createActionGroup({
   source: 'UI',

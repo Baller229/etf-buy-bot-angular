@@ -1,0 +1,59 @@
+@if (chartOnly()) {
+
+  <div class="plot-fullscreen">
+    <app-chart-plot
+      [data]="chartData()"
+      [options]="chartOptions()"
+      [slide]="slide()" />
+  </div>
+
+} @else {
+
+  <div class="portfolio-layout">
+
+    <app-portfolio-header-bar
+      [y1Key]="y1Key()"
+      [y2Key]="y2Key()"
+      [splitMode]="splitMode()"
+      (setY1)="onSetY1($event)"
+      (setY2)="onSetY2($event)"
+      (setSplit)="onSetSplit($event)" />
+
+    @if (!snapshot()) {
+      <div class="empty-state">
+        <p class="empty-msg">Waiting for wallet data…</p>
+      </div>
+    } @else {
+      <div class="plot-area">
+        <app-chart-plot
+          [data]="chartData()"
+          [options]="chartOptions()"
+          [slide]="slide()" />
+      </div>
+    }
+
+    <app-axis-legend [items]="legendItems()" (toggle)="onToggleLegend($event)" />
+
+    <div class="range-wrap">
+      <app-range-filter-bar
+        [preset]="rangePreset()"
+        [anchorDateTimeLocal]="anchorDateTimeLocal()"
+        [leftSteps]="leftSteps()"
+        [rightSteps]="rightSteps()"
+        [minAnchorLocal]="minAnchorLocal()"
+        [maxAnchorLocal]="maxAnchorLocal()"
+        [leftPlusDisabled]="leftPlusDisabled()"
+        [rightPlusDisabled]="rightPlusDisabled()"
+        (presetChange)="onPresetChange($event)"
+        (anchorChange)="onAnchorChange($event)"
+        (incLeft)="onIncLeft()"
+        (decLeft)="onDecLeft()"
+        (setLeft)="onSetLeft($event)"
+        (incRight)="onIncRight()"
+        (decRight)="onDecRight()"
+        (setRight)="onSetRight($event)" />
+    </div>
+
+  </div>
+
+}

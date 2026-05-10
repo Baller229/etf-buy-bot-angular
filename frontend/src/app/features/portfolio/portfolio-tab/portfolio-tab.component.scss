@@ -1,0 +1,52 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.portfolio-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.plot-area {
+  flex: 1;
+  min-height: 220px;
+  overflow: hidden;
+
+  @media (max-width: 599px) {
+    flex: 0 0 auto;
+    height: clamp(240px, 45vh, 400px);
+    min-height: 0;
+  }
+}
+
+.plot-fullscreen {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.empty-state {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+.empty-msg {
+  opacity: 0.75;
+  text-align: center;
+  font-size: 14px;
+}
+
+.range-wrap {
+  flex: 0 0 auto;
+  padding: 4px 0 10px;
+  display: flex;
+  justify-content: center;
+}
