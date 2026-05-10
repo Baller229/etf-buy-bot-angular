@@ -14,7 +14,6 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import {
-  TableActions,
   ChartActions,
   RangeActions,
   selectColumns,

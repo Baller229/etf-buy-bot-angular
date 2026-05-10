@@ -11,6 +11,8 @@ export type WsMsgType =
 
 export type WsStatus = 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED';
 
+export type TableId = 'etf' | 'portfolioTickers';
+
 export type TableColumn = {
   key: string;
   label: string;
@@ -20,6 +22,7 @@ export type TableColumn = {
 export type TableRow = Record<string, unknown> & { id: string };
 
 export type InitTablePayload = {
+  tableId: TableId;
   columns: TableColumn[];
   rows: TableRow[];
 };
@@ -55,6 +58,7 @@ export type RangeFilter =
   | { preset: Exclude<RangePreset, 'MAX'>; anchorDateTime: string; leftSteps: number; rightSteps: number };
 
 export type ApplyFilterPayload = {
+  tableId: TableId;
   rowIds: string[];
   y1: string | null;
   y2: string | null;

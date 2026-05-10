@@ -128,7 +128,11 @@ export class App implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(msg => {
         if (msg.wsMsgType === 'INIT_TABLE' && msg.table) {
-          this.store.dispatch(TableActions.initTable({ payload: msg.table }));
+          this.store.dispatch(TableActions.initTable({
+            tableId: msg.table.tableId,
+            columns: msg.table.columns,
+            rows: msg.table.rows,
+          }));
         } else if (msg.wsMsgType === 'DATA_SNAPSHOT' && msg.snapshot) {
           this.store.dispatch(ChartActions.snapshotReceived({ payload: msg.snapshot }));
         } else if (msg.wsMsgType === 'PORTFOLIO_SNAPSHOT' && msg.portfolioSnapshot) {

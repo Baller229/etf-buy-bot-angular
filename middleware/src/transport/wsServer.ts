@@ -5,6 +5,9 @@ import { Logger } from "../core/logger";
 import { InitTableService } from "../services/initTableService";
 import { DataSnapshotService } from "../services/dataSnapshotService";
 import { PortfolioSnapshotService } from "../services/portfolioSnapshotService";
+import type { TableId } from "../app/tableTypes";
+
+type TableServices = Record<TableId, { initTable: InitTableService; snapshot: DataSnapshotService }>;
 
 export class WsServer {
   private wss: WebSocketServer;
@@ -12,9 +15,8 @@ export class WsServer {
 
   constructor(
     private opts: { port: number; path: string },
-    private initTableService: InitTableService,
-    private snapshotService: DataSnapshotService,
-    private portfolioSnapshotService: PortfolioSnapshotService
+    private tableServices: TableServices,
+    private portfolioSnapshotService: PortfolioSnapshotService,
   ) {
     this.wss = new WebSocketServer({ port: opts.port, path: opts.path });
   }
@@ -22,17 +24,10 @@ export class WsServer {
   start() {
     this.log.info("listening", this.opts);
 
-
-    // ======================================================================
-    //
-    // ======================================================================
-
-
     this.wss.on("connection", (socket) => {
       const clientId = randomUUID();
       this.log.info("connected", { clientId });
 
-      // HELLO
       this.send(socket, {
         wsMsgType: "HELLO",
         requestId: randomUUID(),
@@ -41,30 +36,26 @@ export class WsServer {
         version: 3,
       });
 
-      // INIT_TABLE (right after connect)
-      try {
-        const table = this.initTableService.getInitTable();
-        this.send(socket, {
-          wsMsgType: "INIT_TABLE",
-          requestId: randomUUID(),
-          serverTime: new Date().toISOString(),
-          table,
-        });
-      } catch (e) {
-        this.send(socket, {
-          wsMsgType: "ERROR",
-          requestId: randomUUID(),
-          serverTime: new Date().toISOString(),
-          message: "INIT_TABLE failed",
-          details: String(e),
-        });
+      // Send INIT_TABLE for every table so the frontend has all data immediately
+      for (const tableId of Object.keys(this.tableServices) as TableId[]) {
+        try {
+          const table = this.tableServices[tableId].initTable.getInitTable();
+          this.send(socket, {
+            wsMsgType: "INIT_TABLE",
+            requestId: randomUUID(),
+            serverTime: new Date().toISOString(),
+            table,
+          });
+        } catch (e) {
+          this.send(socket, {
+            wsMsgType: "ERROR",
+            requestId: randomUUID(),
+            serverTime: new Date().toISOString(),
+            message: `INIT_TABLE failed for ${tableId}`,
+            details: String(e),
+          });
+        }
       }
-
-
-      // ======================================================================
-      //
-      // ======================================================================
-
 
       socket.on("message", (data) => {
         const raw = data.toString("utf-8");
@@ -89,17 +80,17 @@ export class WsServer {
 
         if (msg.wsMsgType === "APPLY_FILTER") {
           const filter = (msg as any).filter as
-            | { rowIds?: unknown; y1?: unknown; y2?: unknown; range?: unknown }
+            | { tableId?: unknown; rowIds?: unknown; y1?: unknown; y2?: unknown; range?: unknown }
             | undefined;
 
+          const tableId = (filter?.tableId === "portfolioTickers" ? "portfolioTickers" : "etf") as TableId;
           const rowIds = Array.isArray(filter?.rowIds) ? (filter!.rowIds as unknown[]).map(String) : [];
           const y1Key = filter?.y1 ? String(filter.y1) : null;
           const y2Key = filter?.y2 ? String(filter.y2) : null;
           const range = filter?.range as any | undefined;
 
           try {
-            const snapshot = this.snapshotService.build(rowIds, y1Key, y2Key, range);
-
+            const snapshot = this.tableServices[tableId].snapshot.build(rowIds, y1Key, y2Key, range);
             this.send(socket, {
               wsMsgType: "DATA_SNAPSHOT",
               requestId: msg.requestId ?? randomUUID(),
@@ -115,7 +106,6 @@ export class WsServer {
               details: String(e),
             });
           }
-
           return;
         }
 
@@ -145,16 +135,9 @@ export class WsServer {
               details: String(e),
             });
           }
-
           return;
         }
       });
-
-
-      // ======================================================================
-      //
-      // ======================================================================
-
 
       socket.on("close", (code, reason) => {
         this.log.info("disconnected", {
@@ -164,18 +147,10 @@ export class WsServer {
         });
       });
 
-
-      // ======================================================================
-      //
-      // ======================================================================
-
-
       socket.on("error", (err) => {
         this.log.error("socket error", { clientId, err: String(err) });
       });
     });
-
-
   }
 
   private send(socket: WebSocket, msg: WsEnvelope) {

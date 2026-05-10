@@ -22,6 +22,18 @@
   margin: 0;
 }
 
+.table-selector-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px 0;
+  flex-shrink: 0;
+
+  .chip-btn { cursor: pointer; user-select: none; }
+  .chip-off { opacity: 0.55; }
+}
+
 .chips-bar {
   display: flex;
   align-items: center;

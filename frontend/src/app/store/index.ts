@@ -44,7 +44,7 @@ export function localStorageSyncReducer(
   return localStorageSync({
     keys: [
       { ui: ['darkMode', 'showWsInspector'] },
-      { table: ['selectedRowIds', 'y1Key', 'y2Key'] },
+      { table: ['activeTableId', 'tables'] },
       { range: ['rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
       { portfolio: ['y1Key', 'y2Key', 'splitMode', 'rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
     ],
@@ -54,6 +54,7 @@ export function localStorageSyncReducer(
 
 // Cross-slice selector — builds the APPLY_FILTER payload
 import {
+  selectActiveTableId,
   selectSelectedRowIds,
   selectY1Key,
   selectY2Key,
@@ -66,6 +67,7 @@ import {
 } from './range/range.selectors';
 
 export const selectApplyFilterPayload = createSelector(
+  selectActiveTableId,
   selectSelectedRowIds,
   selectY1Key,
   selectY2Key,
@@ -73,17 +75,18 @@ export const selectApplyFilterPayload = createSelector(
   selectAnchorDateTimeLocal,
   selectLeftSteps,
   selectRightSteps,
-  (rowIds, y1, y2, preset, anchorLocal, leftSteps, rightSteps): ApplyFilterPayload | null => {
+  (tableId, rowIds, y1, y2, preset, anchorLocal, leftSteps, rightSteps): ApplyFilterPayload | null => {
     if (preset !== 'MAX' && !anchorLocal) return null;
 
     if (preset === 'MAX') {
-      return { rowIds, y1, y2, range: { preset: 'MAX' } };
+      return { tableId, rowIds, y1, y2, range: { preset: 'MAX' } };
     }
 
     const d = new Date(anchorLocal);
     if (isNaN(d.getTime())) return null;
 
     return {
+      tableId,
       rowIds,
       y1,
       y2,

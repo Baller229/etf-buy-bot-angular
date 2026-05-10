@@ -21,6 +21,7 @@ export class WsEffects {
       merge(
         this.actions$.pipe(
           ofType(
+            TableActions.setActiveTable,
             TableActions.toggleRowSelection,
             TableActions.setAllSelected,
             TableActions.clearSelection,

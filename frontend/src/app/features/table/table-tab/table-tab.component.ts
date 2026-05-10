@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 import {
   TableActions,
+  selectActiveTableId,
   selectColumns,
   selectRows,
   selectSelectedRowIds,
@@ -23,7 +24,7 @@ import {
   selectSortKey,
   selectSortDir,
 } from '../../../store';
-import type { TableColumn, TableRow } from '../../../core/ws/ws.types';
+import type { TableColumn, TableId, TableRow } from '../../../core/ws/ws.types';
 
 type SortDir = 'asc' | 'desc';
 
@@ -71,6 +72,7 @@ export class TableTabComponent implements OnInit {
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly destroyRef = inject(DestroyRef);
 
+  readonly activeTableId = toSignal(this.store.select(selectActiveTableId), { initialValue: 'etf' as TableId });
   readonly columns = toSignal(
     this.store.select(selectColumns).pipe(map(normalizeColumns)),
     { initialValue: [] as TableColumn[] },
@@ -177,6 +179,8 @@ export class TableTabComponent implements OnInit {
       this.store.dispatch(TableActions.setY2Key({ key }));
     }
   }
+
+  onSetTable(tableId: TableId): void { this.store.dispatch(TableActions.setActiveTable({ tableId })); }
 
   rowTrackBy(_: number, row: TableRow): string { return row.id; }
 }

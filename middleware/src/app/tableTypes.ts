@@ -8,7 +8,10 @@ export type TableRow = Record<string, unknown> & {
     id: string;
 };
 
+export type TableId = 'etf' | 'portfolioTickers';
+
 export type InitTablePayload = {
+    tableId: TableId;
     columns: TableColumn[];
     rows: TableRow[];
 };

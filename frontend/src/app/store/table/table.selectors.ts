@@ -3,13 +3,17 @@ import type { TableState } from './table.reducer';
 
 const selectTableState = createFeatureSelector<TableState>('table');
 
-export const selectColumns = createSelector(selectTableState, s => s.columns);
-export const selectRows = createSelector(selectTableState, s => s.rows);
-export const selectSelectedRowIds = createSelector(selectTableState, s => s.selectedRowIds);
-export const selectY1Key = createSelector(selectTableState, s => s.y1Key);
-export const selectY2Key = createSelector(selectTableState, s => s.y2Key);
-export const selectSortKey = createSelector(selectTableState, s => s.sortKey);
-export const selectSortDir = createSelector(selectTableState, s => s.sortDir);
+export const selectActiveTableId = createSelector(selectTableState, s => s.activeTableId);
+
+const selectActiveInstance = createSelector(selectTableState, s => s.tables[s.activeTableId]);
+
+export const selectColumns = createSelector(selectActiveInstance, i => i.columns);
+export const selectRows = createSelector(selectActiveInstance, i => i.rows);
+export const selectSelectedRowIds = createSelector(selectActiveInstance, i => i.selectedRowIds);
+export const selectY1Key = createSelector(selectActiveInstance, i => i.y1Key);
+export const selectY2Key = createSelector(selectActiveInstance, i => i.y2Key);
+export const selectSortKey = createSelector(selectActiveInstance, i => i.sortKey);
+export const selectSortDir = createSelector(selectActiveInstance, i => i.sortDir);
 
 export const selectSelectedRows = createSelector(
   selectRows,

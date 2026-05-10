@@ -1,31 +1,36 @@
 import { WsServer } from "./transport/wsServer";
 import { MultiQuoteTableRepo } from "./data/multiQuoteTableRepo";
+import { MultiQuoteAllRepo } from "./data/multiQuoteAllRepo";
 import { InitTableService } from "./services/initTableService";
 import { DataSnapshotService } from "./services/dataSnapshotService";
-import { MultiQuoteAllRepo } from "./data/multiQuoteAllRepo";
 import { PortfolioRepo } from "./data/portfolioRepo";
 import { PortfolioSnapshotService } from "./services/portfolioSnapshotService";
 
 const port = Number(process.env.PORT ?? 8083);
 const path = String(process.env.WS_PATH ?? "/ws");
-
-// IMPORTANT: run backend from /fake-backend, CSVs are in ../data
 const dataDir = String(process.env.DATA_DIR ?? "../data");
-const tableFile = String(process.env.TABLE_FILE ?? "MultiQuoteTable.csv");
-const allFile = String(process.env.ALL_FILE ?? "MultiQuoteAll.csv");
 
-// Portfolio CSV lives in etf-buy-bot-angular/data/ (sibling of this project)
-const portfolioDataDir = String(process.env.PORTFOLIO_DATA_DIR ?? "../../etf-buy-bot-angular/data");
-const portfolioFile = String(process.env.PORTFOLIO_FILE ?? "portfolio.csv");
+// ETF dataset
+const etfTableRepo = new MultiQuoteTableRepo({ dataDir, fileName: "EtfTable.csv" });
+const etfAllRepo = new MultiQuoteAllRepo({ dataDir, fileName: "EtfTableAll.csv" });
+const etfInitTableService = new InitTableService("etf", etfTableRepo);
+const etfSnapshotService = new DataSnapshotService(etfAllRepo);
 
-const repo = new MultiQuoteTableRepo({ dataDir, fileName: tableFile });
-const initTableService = new InitTableService(repo);
+// Portfolio Tickers dataset
+const portfolioTickersTableRepo = new MultiQuoteTableRepo({ dataDir, fileName: "PortfolioTickersTable.csv" });
+const portfolioTickersAllRepo = new MultiQuoteAllRepo({ dataDir, fileName: "PortfolioTickersTableAll.csv" });
+const portfolioTickersInitTableService = new InitTableService("portfolioTickers", portfolioTickersTableRepo);
+const portfolioTickersSnapshotService = new DataSnapshotService(portfolioTickersAllRepo);
 
-const allRepo = new MultiQuoteAllRepo({ dataDir, fileName: allFile });
-const snapshotService = new DataSnapshotService(allRepo);
-
-const portfolioRepo = new PortfolioRepo({ dataDir: portfolioDataDir, fileName: portfolioFile });
+// Portfolio (wallet tab)
+const portfolioDataDir = String(process.env.PORTFOLIO_DATA_DIR ?? "../data");
+const portfolioRepo = new PortfolioRepo({ dataDir: portfolioDataDir, fileName: "Portfolio.csv" });
 const portfolioSnapshotService = new PortfolioSnapshotService(portfolioRepo);
 
-const server = new WsServer({ port, path }, initTableService, snapshotService, portfolioSnapshotService);
+const tableServices = {
+    etf: { initTable: etfInitTableService, snapshot: etfSnapshotService },
+    portfolioTickers: { initTable: portfolioTickersInitTableService, snapshot: portfolioTickersSnapshotService },
+};
+
+const server = new WsServer({ port, path }, tableServices, portfolioSnapshotService);
 server.start();

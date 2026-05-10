@@ -1,3 +1,11 @@
+<!-- Table selector — always visible -->
+<div class="table-selector-bar">
+  <span class="chip chip-btn" [class.chip-off]="activeTableId() !== 'etf'"
+        (click)="onSetTable('etf')">ETF</span>
+  <span class="chip chip-btn" [class.chip-off]="activeTableId() !== 'portfolioTickers'"
+        (click)="onSetTable('portfolioTickers')">Tickers</span>
+</div>
+
 @if (!hasData()) {
   <div class="empty-state">
     <p class="empty-title">Table Filter</p>

@@ -46,6 +46,15 @@ export class MultiQuoteAllRepo {
             trim: true,
         }) as Record<string, unknown>[];
 
+        // Detect time/symbol keys from CSV headers (supports both old and new CSV formats)
+        let timeKey = "time";
+        let symKey = "symbol";
+        if (recordsRaw.length > 0) {
+            const firstSanitized = Object.keys(recordsRaw[0]).map(k => sanitizeKey(k.trim()));
+            timeKey = firstSanitized.find(k => k === "time") ?? firstSanitized.find(k => k.startsWith("yyyy")) ?? "time";
+            symKey = firstSanitized.find(k => k === "symbol") ?? firstSanitized.find(k => k === "name") ?? "symbol";
+        }
+
         // build sanitized-key records
         const out: QuoteRow[] = [];
         for (const rec of recordsRaw) {
@@ -56,8 +65,8 @@ export class MultiQuoteAllRepo {
                 cleaned[key] = typeof v === "string" ? v.trim() : v;
             }
 
-            const symbol = String(cleaned["symbol"] ?? "").trim();
-            const timeRaw = String(cleaned["time"] ?? "").trim();
+            const symbol = String(cleaned[symKey] ?? "").trim();
+            const timeRaw = String(cleaned[timeKey] ?? "").trim();
             const timeIso = parseTimeToIso(timeRaw);
 
             if (!symbol || !timeIso) continue;

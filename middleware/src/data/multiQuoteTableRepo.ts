@@ -52,7 +52,7 @@ export class MultiQuoteTableRepo {
         }));
 
         const keyByLabel = new Map(columns.map((c) => [c.label, c.key]));
-        const symbolKey = keyByLabel.get("symbol") ?? "symbol";
+        const symbolKey = keyByLabel.get("symbol") ?? keyByLabel.get("name") ?? "symbol";
         const idxKey = keyByLabel.get("idx") ?? "idx";
 
         const rows: TableRow[] = records.map((r) => {
