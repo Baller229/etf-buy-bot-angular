@@ -62,6 +62,18 @@ export function formatTickFromIso(rawIso: string): string {
   }
 }
 
+export function formatTooltipTitle(rawIso: string): string {
+  try {
+    return format(parseISO(rawIso), 'dd.MM.yyyy HH:mm:ss');
+  } catch {
+    return rawIso;
+  }
+}
+
+export function formatClockTime(ts: number): string {
+  return format(new Date(ts), 'HH:mm:ss');
+}
+
 export function isoToLocalInput(iso: string): string {
   try {
     const d = parseISO(iso);

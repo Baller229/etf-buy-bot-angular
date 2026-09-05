@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 import { Logger } from "../core/logger";
+import { readFileSignature, sameSignature, type FileSignature } from "../core/fileSignature";
+import { csvTimeToUtcIso, DEFAULT_DATA_TIME_ZONE } from "../core/timeZone";
 
 export type PortfolioRow = {
   timeIso: string;
@@ -12,14 +14,6 @@ export type PortfolioRow = {
 };
 
 const PORTFOLIO_KEYS = ["value", "profitP", "profit", "purchase"] as const;
-
-function parsePortfolioTime(raw: string): string | null {
-  const s = raw.trim();
-  const m = s.match(/^(\d{4})\.(\d{2})\.(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
-  if (!m) return null;
-  const [, yyyy, mm, dd, HH, MM, SS] = m;
-  return `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}.000Z`;
-}
 
 function parseDecimal(v: unknown): number | null {
   if (v === null || v === undefined) return null;
@@ -32,16 +26,44 @@ function parseDecimal(v: unknown): number | null {
 export class PortfolioRepo {
   private log = new Logger("repo:Portfolio");
   private cache: PortfolioRow[] | null = null;
+  private cacheSignature: FileSignature | null = null;
 
-  constructor(private opts: { dataDir: string; fileName: string }) {}
+  readonly filePath: string;
+
+  constructor(private opts: { dataDir: string; fileName: string; timeZone?: string }) {
+    this.filePath = path.resolve(process.cwd(), opts.dataDir, opts.fileName);
+  }
 
   loadAll(): PortfolioRow[] {
-    if (this.cache) return this.cache;
+    const signature = readFileSignature(this.filePath);
 
-    const filePath = path.resolve(process.cwd(), this.opts.dataDir, this.opts.fileName);
-    this.log.info("loading csv", { filePath });
+    if (this.cache && sameSignature(signature, this.cacheSignature)) return this.cache;
 
-    const csv = readFileSync(filePath, "utf-8");
+    this.log.info("loading csv", { filePath: this.filePath });
+
+    let rows: PortfolioRow[];
+    try {
+      rows = this.parseCsv(readFileSync(this.filePath, "utf-8"));
+    } catch (e) {
+      if (this.cache) {
+        this.log.warn("csv read failed, keeping previous data", { filePath: this.filePath, err: String(e) });
+        return this.cache;
+      }
+      throw e;
+    }
+
+    if (rows.length === 0 && this.cache) {
+      this.log.warn("csv parsed to 0 rows, keeping previous data", { filePath: this.filePath });
+      return this.cache;
+    }
+
+    this.cache = rows;
+    this.cacheSignature = signature;
+    this.log.info("loaded", { rows: rows.length });
+    return rows;
+  }
+
+  private parseCsv(csv: string): PortfolioRow[] {
     const recordsRaw = parse(csv, {
       columns: true,
       delimiter: ";",
@@ -53,7 +75,7 @@ export class PortfolioRepo {
     for (const rec of recordsRaw) {
       // Time is in the first column regardless of header name
       const timeRaw = String(Object.values(rec)[0] ?? "").trim();
-      const timeIso = parsePortfolioTime(timeRaw);
+      const timeIso = csvTimeToUtcIso(timeRaw, this.opts.timeZone ?? DEFAULT_DATA_TIME_ZONE);
       if (!timeIso) continue;
 
       out.push({
@@ -66,8 +88,6 @@ export class PortfolioRepo {
     }
 
     out.sort((a, b) => a.timeIso.localeCompare(b.timeIso));
-    this.cache = out;
-    this.log.info("loaded", { rows: out.length });
     return out;
   }
 }

@@ -10,8 +10,11 @@ export type TableRow = Record<string, unknown> & {
 
 export type TableId = 'etf' | 'portfolioTickers';
 
-export type InitTablePayload = {
-    tableId: TableId;
+export type TableData = {
     columns: TableColumn[];
     rows: TableRow[];
+};
+
+export type InitTablePayload = TableData & {
+    tableId: TableId;
 };

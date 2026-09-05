@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 import { Logger } from "../core/logger";
+import { readFileSignature, sameSignature, type FileSignature } from "../core/fileSignature";
+import { csvTimeToUtcIso, DEFAULT_DATA_TIME_ZONE } from "../core/timeZone";
 
 export type QuoteRow = {
     symbol: string;
@@ -17,28 +19,57 @@ function sanitizeKey(header: string) {
     return k;
 }
 
-function parseTimeToIso(raw: string): string | null {
-    const s = raw.trim().replace("_", " ");
-    const m = s.match(/^(\d{4})\.(\d{2})\.(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
-    if (!m) return null;
-    const [_, yyyy, mm, dd, HH, MM, SS] = m;
-    return `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}.000Z`;
-}
-
 export class MultiQuoteAllRepo {
     private log = new Logger("repo:MultiQuoteAll");
     private cache: QuoteRow[] | null = null;
+    private cacheSignature: FileSignature | null = null;
 
-    constructor(private opts: { dataDir: string; fileName: string }) { }
+    readonly filePath: string;
+
+    constructor(private opts: { dataDir: string; fileName: string; timeZone?: string }) {
+        this.filePath = path.resolve(process.cwd(), opts.dataDir, opts.fileName);
+    }
 
     loadAll(): QuoteRow[] {
-        if (this.cache) return this.cache;
+        const signature = readFileSignature(this.filePath);
 
-        const filePath = path.resolve(process.cwd(), this.opts.dataDir, this.opts.fileName);
-        this.log.info("loading csv", { filePath });
+        // Cache is valid only while mtime+size match the file on disk.
+        if (this.cache && sameSignature(signature, this.cacheSignature)) return this.cache;
 
-        const csv = readFileSync(filePath, "utf-8");
+        this.log.info("loading csv", { filePath: this.filePath });
 
+        let rows: QuoteRow[];
+        try {
+            rows = this.parseCsv(readFileSync(this.filePath, "utf-8"));
+        } catch (e) {
+            // The producer writes non-atomically, so a half-written file must
+            // never destroy good data. Signature is not stored -> retry next call.
+            if (this.cache) {
+                this.log.warn("csv read failed, keeping previous data", { filePath: this.filePath, err: String(e) });
+                return this.cache;
+            }
+            throw e;
+        }
+
+        if (rows.length === 0 && this.cache) {
+            this.log.warn("csv parsed to 0 rows, keeping previous data", { filePath: this.filePath });
+            return this.cache;
+        }
+
+        this.cache = rows;
+        this.cacheSignature = signature;
+        this.log.info("loaded", { rows: rows.length });
+        return rows;
+    }
+
+    getBySymbols(symbols: string[]): QuoteRow[] {
+        const set = new Set(symbols.map((s) => s.trim()).filter(Boolean));
+        if (set.size === 0) return [];
+        const all = this.loadAll();
+        return all.filter((r) => set.has(r.symbol));
+    }
+
+    private parseCsv(csv: string): QuoteRow[] {
         const recordsRaw = parse(csv, {
             columns: true,
             delimiter: ";",
@@ -67,7 +98,7 @@ export class MultiQuoteAllRepo {
 
             const symbol = String(cleaned[symKey] ?? "").trim();
             const timeRaw = String(cleaned[timeKey] ?? "").trim();
-            const timeIso = parseTimeToIso(timeRaw);
+            const timeIso = csvTimeToUtcIso(timeRaw, this.opts.timeZone ?? DEFAULT_DATA_TIME_ZONE);
 
             if (!symbol || !timeIso) continue;
 
@@ -76,16 +107,6 @@ export class MultiQuoteAllRepo {
 
         // sort by time
         out.sort((a, b) => a.timeIso.localeCompare(b.timeIso));
-
-        this.cache = out;
-        this.log.info("loaded", { rows: out.length });
         return out;
-    }
-
-    getBySymbols(symbols: string[]): QuoteRow[] {
-        const set = new Set(symbols.map((s) => s.trim()).filter(Boolean));
-        if (set.size === 0) return [];
-        const all = this.loadAll();
-        return all.filter((r) => set.has(r.symbol));
     }
 }

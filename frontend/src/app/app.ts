@@ -35,6 +35,7 @@ import { ChartTabComponent } from './features/chart';
 import { SettingsTabComponent } from './features/settings';
 import { PortfolioTabComponent } from './features/portfolio';
 import type { WsLogEntry } from './core/ws/ws.types';
+import { formatClockTime } from './core/utils/chart.utils';
 
 const LANDSCAPE_LOW_H = '(orientation: landscape) and (max-height: 520px)';
 const COARSE = '(pointer: coarse)';
@@ -90,7 +91,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   formatLogTime(ts: number): string {
-    return new Date(ts).toLocaleTimeString();
+    return formatClockTime(ts);
   }
 
   @HostListener('window:resize')

@@ -29,6 +29,7 @@ import {
   buildColorMap,
   fmt,
   formatTickFromIso,
+  formatTooltipTitle,
   isoToLocalInput,
   lastKnownValue,
 } from '../../../core/utils/chart.utils';
@@ -220,7 +221,7 @@ export class PortfolioTabComponent implements OnInit, OnDestroy {
 
             const xIndex = dp.dataIndex;
             const tIso = times[xIndex];
-            const title = tIso ? new Date(tIso).toLocaleString() : '';
+            const title = tIso ? formatTooltipTitle(tIso) : '';
 
             const rows: Array<{ label: string; color: string; value: number | null }> = [];
             for (const ds of chart.data.datasets as PortfolioDataset[]) {
