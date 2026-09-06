@@ -2,6 +2,8 @@ import { ActionReducer, ActionReducerMap } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import { localStorageSync } from 'ngrx-store-localstorage';
 import type { AppState } from './app.state';
+import { fromZonedTime } from 'date-fns-tz';
+import { DATA_TIME_ZONE } from '../core/utils/chart.utils';
 import type { ApplyFilterPayload, RangePreset } from '../core/ws/ws.types';
 
 import { wsReducer } from './ws/ws.reducer';
@@ -85,7 +87,8 @@ export const selectApplyFilterPayload = createSelector(
       return { tableId, rowIds, y1, y2, range: { preset: 'MAX' } };
     }
 
-    const d = new Date(anchorLocal);
+    // The picked wall clock belongs to the data's zone, not to the viewer's machine.
+    const d = fromZonedTime(anchorLocal, DATA_TIME_ZONE);
     if (isNaN(d.getTime())) return null;
 
     return {

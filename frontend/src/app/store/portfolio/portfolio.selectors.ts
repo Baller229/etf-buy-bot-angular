@@ -1,5 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import type { PortfolioState } from './portfolio.reducer';
+import { fromZonedTime } from 'date-fns-tz';
+import { DATA_TIME_ZONE } from '../../core/utils/chart.utils';
 import type { RangePreset } from '../../core/ws/ws.types';
 
 const selectPortfolioState = createFeatureSelector<PortfolioState>('portfolio');
@@ -33,7 +35,8 @@ export const selectPortfolioFilterPayload = createSelector(
     if (preset === 'MAX') {
       return { y1Key, y2Key, range: { preset: 'MAX' as const } };
     }
-    const d = new Date(anchorLocal);
+    // The picked wall clock belongs to the data's zone, not to the viewer's machine.
+    const d = fromZonedTime(anchorLocal, DATA_TIME_ZONE);
     if (isNaN(d.getTime())) return null;
     return {
       y1Key,

@@ -1,4 +1,12 @@
 import { parseISO, format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
+
+/**
+ * Time zone the data belongs to (Xetra). Timestamps are rendered in this zone,
+ * not in the viewer's — 17:35 on the exchange has to read 17:35 on every machine,
+ * whatever its clock is set to. Keep in sync with DATA_TIMEZONE in the middleware.
+ */
+export const DATA_TIME_ZONE = 'Europe/Berlin';
 
 export type AxisKey = 'y1' | 'y2';
 
@@ -55,8 +63,7 @@ export function lastKnownValue(
 // Fix for +2h bug: use parseISO so the string is treated as UTC, not local time.
 export function formatTickFromIso(rawIso: string): string {
   try {
-    const d = parseISO(rawIso);
-    return format(d, 'dd.MM HH:mm');
+    return formatInTimeZone(parseISO(rawIso), DATA_TIME_ZONE, 'dd.MM HH:mm');
   } catch {
     return rawIso;
   }
@@ -64,7 +71,7 @@ export function formatTickFromIso(rawIso: string): string {
 
 export function formatTooltipTitle(rawIso: string): string {
   try {
-    return format(parseISO(rawIso), 'dd.MM.yyyy HH:mm:ss');
+    return formatInTimeZone(parseISO(rawIso), DATA_TIME_ZONE, 'dd.MM.yyyy HH:mm:ss');
   } catch {
     return rawIso;
   }
@@ -74,10 +81,10 @@ export function formatClockTime(ts: number): string {
   return format(new Date(ts), 'HH:mm:ss');
 }
 
+/** UTC instant -> "YYYY-MM-DDTHH:mm" in the data's zone, for a datetime-local input. */
 export function isoToLocalInput(iso: string): string {
   try {
-    const d = parseISO(iso);
-    return format(d, "yyyy-MM-dd'T'HH:mm");
+    return formatInTimeZone(parseISO(iso), DATA_TIME_ZONE, "yyyy-MM-dd'T'HH:mm");
   } catch {
     return '';
   }
