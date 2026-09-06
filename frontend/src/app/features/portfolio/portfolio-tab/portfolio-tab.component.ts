@@ -25,7 +25,7 @@ import {
   selectPortfolioSnapshot,
   selectPortfolioFollowLatest,
 } from '../../../store';
-import type { PortfolioSnapshotPayload, RangePreset } from '../../../core/ws/ws.types';
+import type { PortfolioLatest, PortfolioSnapshotPayload, RangePreset } from '../../../core/ws/ws.types';
 import {
   buildColorMap,
   fmt,
@@ -87,6 +87,36 @@ export class PortfolioTabComponent implements OnInit, OnDestroy {
   readonly snapshot = toSignal(this.store.select(selectPortfolioSnapshot), { initialValue: null as PortfolioSnapshotPayload | null });
   readonly followLatest = toSignal(this.store.select(selectPortfolioFollowLatest), { initialValue: false });
   readonly latestValues = computed(() => this.snapshot()?.latest ?? null);
+
+  /** Data index the cursor/finger is on, or null when no tooltip is showing. */
+  readonly hoverIndex = signal<number | null>(null);
+
+  private readonly metricsIndexByTime = computed(() => {
+    const times = this.snapshot()?.metrics?.times ?? [];
+    const map = new Map<string, number>();
+    times.forEach((t, i) => map.set(t, i));
+    return map;
+  });
+
+  /** Values under the cursor while scrubbing the chart, the newest ones otherwise. */
+  readonly displayedValues = computed((): PortfolioLatest | null => {
+    const snap = this.snapshot();
+    const idx = this.hoverIndex();
+    if (!snap || idx === null) return snap?.latest ?? null;
+
+    const t = this.times()[idx];
+    const m = snap.metrics;
+    const i = t !== undefined ? this.metricsIndexByTime().get(t) : undefined;
+    if (!m || i === undefined) return snap.latest ?? null;
+
+    return {
+      timeIso: m.times[i],
+      value: m.value[i] ?? null,
+      profitP: m.profitP[i] ?? null,
+      profit: m.profit[i] ?? null,
+      purchase: m.purchase[i] ?? null,
+    };
+  });
 
   readonly isMobile = signal(false);
   readonly isLandscapeCompact = signal(false);
@@ -219,11 +249,12 @@ export class PortfolioTabComponent implements OnInit, OnDestroy {
               parent.appendChild(el);
             }
 
-            if (tooltip.opacity === 0) { el.style.opacity = '0'; return; }
+            if (tooltip.opacity === 0) { el.style.opacity = '0'; this.hoverIndex.set(null); return; }
             const dp = tooltip.dataPoints?.[0];
-            if (!dp) { el.style.opacity = '0'; return; }
+            if (!dp) { el.style.opacity = '0'; this.hoverIndex.set(null); return; }
 
             const xIndex = dp.dataIndex;
+            this.hoverIndex.set(xIndex);
             const tIso = times[xIndex];
             const title = tIso ? formatTooltipTitle(tIso) : '';
 

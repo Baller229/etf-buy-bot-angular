@@ -1,6 +1,6 @@
 import { Logger } from "../core/logger";
 import { PortfolioRepo, type PortfolioRow } from "../data/portfolioRepo";
-import type { PortfolioSnapshotPayload, PortfolioSeries, PortfolioPoint, PortfolioLatest } from "../app/portfolioTypes";
+import type { PortfolioSnapshotPayload, PortfolioSeries, PortfolioPoint, PortfolioLatest, PortfolioMetrics } from "../app/portfolioTypes";
 import type { RangeMeta } from "../app/snapshotTypes";
 
 type RangePreset = "1H" | "1D" | "1W" | "1M" | "1Y" | "MAX";
@@ -131,6 +131,15 @@ export class PortfolioSnapshotService {
       series.push({ key: y2Key, axis: "y2", points: buildPoints(rows, y2Key as keyof PortfolioRow) });
     }
 
+    // Every metric of the window, so the wallet summary can follow the cursor.
+    const metrics: PortfolioMetrics = {
+      times: rows.map(r => r.timeIso),
+      value: rows.map(r => r.value),
+      profitP: rows.map(r => r.profitP),
+      profit: rows.map(r => r.profit),
+      purchase: rows.map(r => r.purchase),
+    };
+
     // Newest row of the current window — always sent, regardless of the axis keys.
     const lastRow = rows.length > 0 ? rows[rows.length - 1] : null;
     const latest: PortfolioLatest | null = lastRow
@@ -144,6 +153,6 @@ export class PortfolioSnapshotService {
       : null;
 
     this.log.info("built portfolio snapshot", { y1Key, y2Key, rows: rows.length, preset: (range as any)?.preset ?? "none" });
-    return { y1Key, y2Key, series, rangeMeta, latest };
+    return { y1Key, y2Key, series, rangeMeta, latest, metrics };
   }
 }

@@ -18,7 +18,7 @@ function fmtSigned(v: number | null | undefined, suffix = ''): string {
 @Component({
   selector: 'app-portfolio-summary-bar',
   template: `
-    <div class="summary">
+    <div class="summary" [class.scrubbing]="!isLive()">
       <div class="tile primary">
         <span class="label">Value</span>
         <span class="value">{{ valueText() }}</span>
@@ -75,6 +75,11 @@ function fmtSigned(v: number | null | undefined, suffix = ''): string {
       text-overflow: ellipsis;
     }
     .tile.primary .value { font-size: 19px; }
+    /* Subtle hint that the numbers follow the cursor instead of being the newest ones. */
+    .summary.scrubbing .tile {
+      border-color: color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+    }
     .value.up { color: #22a06b; }
     .value.down { color: #d94f4f; }
     :host-context(.dark) .value.up { color: #4ecf95; }
@@ -91,8 +96,14 @@ function fmtSigned(v: number | null | undefined, suffix = ''): string {
 })
 export class PortfolioSummaryBarComponent {
   private readonly latestSignal = signal<PortfolioLatest | null>(null);
+  private readonly liveSignal = signal(true);
 
   @Input() set latest(v: PortfolioLatest | null) { this.latestSignal.set(v); }
+
+  /** false while the chart is being scrubbed — the tiles then show that point, not the newest one. */
+  @Input() set live(v: boolean) { this.liveSignal.set(v); }
+
+  readonly isLive = this.liveSignal.asReadonly();
 
   readonly valueText = computed(() => fmtMoney(this.latestSignal()?.value));
   readonly purchaseText = computed(() => fmtMoney(this.latestSignal()?.purchase));

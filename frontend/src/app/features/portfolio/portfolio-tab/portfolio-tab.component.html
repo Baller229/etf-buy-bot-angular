@@ -19,7 +19,7 @@
       (setY2)="onSetY2($event)"
       (setSplit)="onSetSplit($event)" />
 
-    <app-portfolio-summary-bar [latest]="latestValues()" />
+    <app-portfolio-summary-bar [latest]="displayedValues()" [live]="hoverIndex() === null" />
 
     @if (!snapshot()) {
       <div class="empty-state">

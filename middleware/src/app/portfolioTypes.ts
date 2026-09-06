@@ -17,10 +17,24 @@ export type PortfolioLatest = {
   purchase: number | null;
 };
 
+/**
+ * All four metrics of the window, columnar. The axis series only cover the two
+ * selected keys, so the wallet summary needs its own source to show every value
+ * at an arbitrary point in time.
+ */
+export type PortfolioMetrics = {
+  times: string[];
+  value: (number | null)[];
+  profitP: (number | null)[];
+  profit: (number | null)[];
+  purchase: (number | null)[];
+};
+
 export type PortfolioSnapshotPayload = {
   y1Key: string | null;
   y2Key: string | null;
   series: PortfolioSeries[];
   rangeMeta: RangeMeta;
   latest: PortfolioLatest | null;
+  metrics: PortfolioMetrics;
 };

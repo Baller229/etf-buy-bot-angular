@@ -80,12 +80,22 @@ export type PortfolioLatest = {
   purchase: number | null;
 };
 
+/** All four metrics of the window, columnar — lets the summary follow the cursor. */
+export type PortfolioMetrics = {
+  times: string[];
+  value: (number | null)[];
+  profitP: (number | null)[];
+  profit: (number | null)[];
+  purchase: (number | null)[];
+};
+
 export type PortfolioSnapshotPayload = {
   y1Key: string | null;
   y2Key: string | null;
   series: PortfolioSeries[];
   rangeMeta: RangeMeta;
   latest: PortfolioLatest | null;
+  metrics: PortfolioMetrics;
 };
 
 export type PortfolioFilterPayload = {
