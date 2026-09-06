@@ -9,7 +9,7 @@ import { selectRangeMeta } from '../chart/chart.selectors';
 import { TableActions } from '../table/table.actions';
 import { selectLatestSelectedTimeLocal } from '../table/table.selectors';
 import { RangeActions } from './range.actions';
-import { selectAnchorDateTimeLocal, selectFollowLatest } from './range.selectors';
+import { selectAnchorDateTimeLocal, selectAnchorExactIso, selectFollowLatest } from './range.selectors';
 
 @Injectable()
 export class RangeEffects {
@@ -47,15 +47,20 @@ export class RangeEffects {
         this.store.select(selectLatestSelectedTimeLocal),
         this.store.select(selectRangeMeta),
         this.store.select(selectAnchorDateTimeLocal),
+        this.store.select(selectAnchorExactIso),
       ),
       filter(([, follow]) => follow),
-      map(([, , tableLatest, meta, anchor]) => ({
+      map(([, , tableLatest, meta, anchor, exact]) => ({
         value: tableLatest ?? (meta?.maxIso ? isoToLocalInput(meta.maxIso) : ''),
+        // Exact instant of the newest point — the minute-resolution input would
+        // otherwise leave the last seconds of data outside the window.
+        exactIso: meta?.maxIso ?? null,
         anchor,
+        exact,
       })),
       // Guard against a feedback loop: only dispatch when the anchor really moves.
-      filter(({ value, anchor }) => !!value && value !== anchor),
-      map(({ value }) => RangeActions.anchorFollowedLatest({ value })),
+      filter(({ value, anchor, exactIso, exact }) => !!value && (value !== anchor || exactIso !== exact)),
+      map(({ value, exactIso }) => RangeActions.anchorFollowedLatest({ value, exactIso })),
     ),
   );
 }

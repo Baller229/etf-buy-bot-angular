@@ -34,7 +34,7 @@
       </div>
     }
 
-    <app-axis-legend [items]="legendItems()" (toggle)="onToggleLegend($event)" />
+    <app-axis-legend [items]="legendItems()" [singleRow]="true" (toggle)="onToggleLegend($event)" />
 
     <div class="range-wrap">
       <app-range-filter-bar

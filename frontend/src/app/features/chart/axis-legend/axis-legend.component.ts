@@ -25,11 +25,11 @@ function stripAxisSuffix(label: string): string {
   selector: 'app-axis-legend',
   template: `
     @if (items.length > 0) {
-      <div class="legend-wrap">
-        <div class="legend-inner">
-          @if (y1Items.length > 0) {
-            <div class="legend-row">
-              @for (it of y1Items; track it.key) {
+      <div class="legend-wrap" [class.single]="singleRow">
+        <div class="legend-inner" [class.single]="singleRow">
+          @if (singleRow) {
+            <div class="legend-row single">
+              @for (it of items; track it.key) {
                 <button class="legend-item" [class.hidden]="it.hidden"
                         (click)="toggle.emit(it.key)">
                   <span class="dot" [style.background]="it.color"></span>
@@ -37,17 +37,29 @@ function stripAxisSuffix(label: string): string {
                 </button>
               }
             </div>
-          }
-          @if (y2Items.length > 0) {
-            <div class="legend-row">
-              @for (it of y2Items; track it.key) {
-                <button class="legend-item" [class.hidden]="it.hidden"
-                        (click)="toggle.emit(it.key)">
-                  <span class="dot" [style.background]="it.color"></span>
-                  <span class="label">{{ displayLabel(it.label) }}</span>
-                </button>
-              }
-            </div>
+          } @else {
+            @if (y1Items.length > 0) {
+              <div class="legend-row">
+                @for (it of y1Items; track it.key) {
+                  <button class="legend-item" [class.hidden]="it.hidden"
+                          (click)="toggle.emit(it.key)">
+                    <span class="dot" [style.background]="it.color"></span>
+                    <span class="label">{{ displayLabel(it.label) }}</span>
+                  </button>
+                }
+              </div>
+            }
+            @if (y2Items.length > 0) {
+              <div class="legend-row">
+                @for (it of y2Items; track it.key) {
+                  <button class="legend-item" [class.hidden]="it.hidden"
+                          (click)="toggle.emit(it.key)">
+                    <span class="dot" [style.background]="it.color"></span>
+                    <span class="label">{{ displayLabel(it.label) }}</span>
+                  </button>
+                }
+              </div>
+            }
           }
         </div>
       </div>
@@ -91,11 +103,35 @@ function stripAxisSuffix(label: string): string {
     .legend-item:hover { background: var(--mat-sys-surface-container-high); }
     .legend-item.hidden { opacity: 0.35; }
     .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+
+    /* Single-row variant: equal-width toggles, centred, not stretched across the screen. */
+    .legend-wrap.single { overflow-x: hidden; padding: 0 12px 4px; }
+    .legend-inner.single { display: block; width: 100%; }
+    .legend-row.single {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 8px;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .legend-row.single .legend-item {
+      min-width: 0;
+      justify-content: center;
+    }
+    .legend-row.single .label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AxisLegendComponent {
   @Input() items: LegendItem[] = [];
+  /** Wallet: lay every toggle out in one row, all the same width. */
+  @Input() singleRow = false;
   @Output() toggle = new EventEmitter<string>();
 
   get y1Items(): LegendItem[] { return this.items.filter(i => i.key.endsWith('::y1')); }

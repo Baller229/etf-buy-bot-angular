@@ -11,6 +11,8 @@ export interface PortfolioState {
   leftSteps: number;
   rightSteps: number;
   followLatest: boolean;
+  /** Exact UTC instant of the followed point — the input itself only has minutes. */
+  anchorExactIso: string | null;
   snapshot: PortfolioSnapshotPayload | null;
 }
 
@@ -23,6 +25,7 @@ const initialState: PortfolioState = {
   leftSteps: 0,
   rightSteps: 0,
   followLatest: false,
+  anchorExactIso: null,
   snapshot: null,
 };
 
@@ -32,9 +35,9 @@ export const portfolioReducer = createReducer(
   on(PortfolioActions.setY2Key, (state, { key }) => ({ ...state, y2Key: key })),
   on(PortfolioActions.setSplitMode, (state, { split }) => ({ ...state, splitMode: split })),
   on(PortfolioActions.setRangePreset, (state, { preset }) => ({ ...state, rangePreset: preset })),
-  on(PortfolioActions.setAnchor, (state, { value }) => ({ ...state, anchorDateTimeLocal: value, followLatest: false })),
-  on(PortfolioActions.setFollowLatest, (state, { follow }) => ({ ...state, followLatest: follow })),
-  on(PortfolioActions.anchorFollowedLatest, (state, { value }) => ({ ...state, anchorDateTimeLocal: value })),
+  on(PortfolioActions.setAnchor, (state, { value }) => ({ ...state, anchorDateTimeLocal: value, followLatest: false, anchorExactIso: null })),
+  on(PortfolioActions.setFollowLatest, (state, { follow }) => ({ ...state, followLatest: follow, anchorExactIso: follow ? state.anchorExactIso : null })),
+  on(PortfolioActions.anchorFollowedLatest, (state, { value, exactIso }) => ({ ...state, anchorDateTimeLocal: value, anchorExactIso: exactIso })),
   on(PortfolioActions.setLeftSteps, (state, { steps }) => ({ ...state, leftSteps: Math.max(0, steps) })),
   on(PortfolioActions.setRightSteps, (state, { steps }) => ({ ...state, rightSteps: Math.max(0, steps) })),
   on(PortfolioActions.incrementLeft, state => ({ ...state, leftSteps: state.leftSteps + 1 })),

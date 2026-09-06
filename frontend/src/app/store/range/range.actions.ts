@@ -7,7 +7,7 @@ export const RangeActions = createActionGroup({
     'Set Preset': props<{ preset: RangePreset }>(),
     'Set Anchor': props<{ value: string }>(),
     'Set Follow Latest': props<{ follow: boolean }>(),
-    'Anchor Followed Latest': props<{ value: string }>(),
+    'Anchor Followed Latest': props<{ value: string; exactIso: string | null }>(),
     'Set Left Steps': props<{ steps: number }>(),
     'Set Right Steps': props<{ steps: number }>(),
     'Increment Left': emptyProps(),

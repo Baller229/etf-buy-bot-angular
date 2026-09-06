@@ -8,6 +8,7 @@ export const selectAnchorDateTimeLocal = createSelector(selectRangeState, s => s
 export const selectLeftSteps = createSelector(selectRangeState, s => s.leftSteps);
 export const selectRightSteps = createSelector(selectRangeState, s => s.rightSteps);
 export const selectFollowLatest = createSelector(selectRangeState, s => s.followLatest);
+export const selectAnchorExactIso = createSelector(selectRangeState, s => s.anchorExactIso);
 
 export const selectCanApplyFilter = createSelector(
   selectRangeState,

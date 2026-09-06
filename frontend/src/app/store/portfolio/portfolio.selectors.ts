@@ -13,6 +13,7 @@ export const selectPortfolioLeftSteps = createSelector(selectPortfolioState, s =
 export const selectPortfolioRightSteps = createSelector(selectPortfolioState, s => s.rightSteps);
 export const selectPortfolioSnapshot = createSelector(selectPortfolioState, s => s.snapshot);
 export const selectPortfolioFollowLatest = createSelector(selectPortfolioState, s => s.followLatest);
+export const selectPortfolioAnchorExactIso = createSelector(selectPortfolioState, s => s.anchorExactIso);
 export const selectPortfolioRangeMeta = createSelector(selectPortfolioSnapshot, s => s?.rangeMeta ?? null);
 
 export const selectPortfolioFilterPayload = createSelector(
@@ -23,7 +24,8 @@ export const selectPortfolioFilterPayload = createSelector(
   selectPortfolioLeftSteps,
   selectPortfolioRightSteps,
   selectPortfolioFollowLatest,
-  (y1Key, y2Key, preset, anchorLocal, leftSteps, rightSteps, followLatest) => {
+  selectPortfolioAnchorExactIso,
+  (y1Key, y2Key, preset, anchorLocal, leftSteps, rightSteps, followLatest, anchorExactIso) => {
     if (preset !== 'MAX' && !anchorLocal && followLatest) {
       return { y1Key, y2Key, range: { preset: 'MAX' as const } };
     }
@@ -38,7 +40,8 @@ export const selectPortfolioFilterPayload = createSelector(
       y2Key,
       range: {
         preset: preset as Exclude<RangePreset, 'MAX'>,
-        anchorDateTime: d.toISOString(),
+        // Exact instant while following the latest point, otherwise the picked minute.
+        anchorDateTime: anchorExactIso ?? d.toISOString(),
         leftSteps,
         rightSteps,
       },

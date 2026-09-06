@@ -10,6 +10,7 @@ import { selectWsStatus } from '../ws/ws.selectors';
 import { PortfolioActions } from './portfolio.actions';
 import {
   selectPortfolioAnchorDateTimeLocal,
+  selectPortfolioAnchorExactIso,
   selectPortfolioFilterPayload,
   selectPortfolioFollowLatest,
   selectPortfolioRangeMeta,
@@ -75,12 +76,18 @@ export class PortfolioEffects {
         this.store.select(selectPortfolioFollowLatest),
         this.store.select(selectPortfolioRangeMeta),
         this.store.select(selectPortfolioAnchorDateTimeLocal),
+        this.store.select(selectPortfolioAnchorExactIso),
       ),
       filter(([, follow, meta]) => follow && !!meta?.maxIso),
-      map(([, , meta, anchor]) => ({ value: isoToLocalInput(meta!.maxIso!), anchor })),
-      // Guard against a feedback loop: only dispatch when the anchor really moves.
-      filter(({ value, anchor }) => !!value && value !== anchor),
-      map(({ value }) => PortfolioActions.anchorFollowedLatest({ value })),
+      map(([, , meta, anchor, exact]) => ({
+        value: isoToLocalInput(meta!.maxIso!),
+        exactIso: meta!.maxIso,
+        anchor,
+        exact,
+      })),
+      // Guard against a feedback loop: only dispatch when something really moves.
+      filter(({ value, anchor, exactIso, exact }) => !!value && (value !== anchor || exactIso !== exact)),
+      map(({ value, exactIso }) => PortfolioActions.anchorFollowedLatest({ value, exactIso })),
     ),
   );
 }
