@@ -12,6 +12,8 @@ export const selectPortfolioAnchorDateTimeLocal = createSelector(selectPortfolio
 export const selectPortfolioLeftSteps = createSelector(selectPortfolioState, s => s.leftSteps);
 export const selectPortfolioRightSteps = createSelector(selectPortfolioState, s => s.rightSteps);
 export const selectPortfolioSnapshot = createSelector(selectPortfolioState, s => s.snapshot);
+export const selectPortfolioFollowLatest = createSelector(selectPortfolioState, s => s.followLatest);
+export const selectPortfolioRangeMeta = createSelector(selectPortfolioSnapshot, s => s?.rangeMeta ?? null);
 
 export const selectPortfolioFilterPayload = createSelector(
   selectPortfolioY1Key,
@@ -20,7 +22,11 @@ export const selectPortfolioFilterPayload = createSelector(
   selectPortfolioAnchorDateTimeLocal,
   selectPortfolioLeftSteps,
   selectPortfolioRightSteps,
-  (y1Key, y2Key, preset, anchorLocal, leftSteps, rightSteps) => {
+  selectPortfolioFollowLatest,
+  (y1Key, y2Key, preset, anchorLocal, leftSteps, rightSteps, followLatest) => {
+    if (preset !== 'MAX' && !anchorLocal && followLatest) {
+      return { y1Key, y2Key, range: { preset: 'MAX' as const } };
+    }
     if (preset !== 'MAX' && !anchorLocal) return null;
     if (preset === 'MAX') {
       return { y1Key, y2Key, range: { preset: 'MAX' as const } };

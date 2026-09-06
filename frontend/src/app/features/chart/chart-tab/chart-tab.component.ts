@@ -27,6 +27,8 @@ import {
   selectAnchorDateTimeLocal,
   selectLeftSteps,
   selectRightSteps,
+  selectFollowLatest,
+  selectLatestSelectedTimeLocal,
 } from '../../../store';
 import type { TableColumn, TableRow, DataSnapshotPayload, RangePreset } from '../../../core/ws/ws.types';
 import {
@@ -72,6 +74,8 @@ export class ChartTabComponent implements OnInit, OnDestroy {
   readonly anchorDateTimeLocal = toSignal(this.store.select(selectAnchorDateTimeLocal), { initialValue: '' });
   readonly leftSteps = toSignal(this.store.select(selectLeftSteps), { initialValue: 0 });
   readonly rightSteps = toSignal(this.store.select(selectRightSteps), { initialValue: 0 });
+  readonly followLatest = toSignal(this.store.select(selectFollowLatest), { initialValue: false });
+  readonly latestSelectedTimeLocal = toSignal(this.store.select(selectLatestSelectedTimeLocal), { initialValue: null as string | null });
 
   // Responsive
   readonly isMobile = signal(false);
@@ -449,6 +453,10 @@ export class ChartTabComponent implements OnInit, OnDestroy {
 
   onAnchorChange(value: string): void {
     this.store.dispatch(RangeActions.setAnchor({ value }));
+  }
+
+  onToggleFollowLatest(): void {
+    this.store.dispatch(RangeActions.setFollowLatest({ follow: !this.followLatest() }));
   }
 
   onIncLeft(): void { this.store.dispatch(RangeActions.incrementLeft()); }

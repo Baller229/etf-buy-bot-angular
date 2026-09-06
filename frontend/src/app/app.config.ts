@@ -4,14 +4,14 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideServiceWorker } from '@angular/service-worker';
-import { appReducers, localStorageSyncReducer, WsEffects, PortfolioEffects } from './store';
+import { appReducers, localStorageSyncReducer, WsEffects, RangeEffects, PortfolioEffects } from './store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideAnimationsAsync(),
     provideStore(appReducers, { metaReducers: [localStorageSyncReducer] }),
-    provideEffects(WsEffects, PortfolioEffects),
+    provideEffects(WsEffects, RangeEffects, PortfolioEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

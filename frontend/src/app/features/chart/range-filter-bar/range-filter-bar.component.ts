@@ -31,7 +31,7 @@ function formatAnchorDisplay(anchorLocal: string): string {
   if (!date || !time) return anchorLocal;
   const [y, m, d] = date.split('-');
   if (!y || !m || !d) return anchorLocal;
-  return `${d}.${m}. ${y} at ${time}`;
+  return `${d}.${m}.${y} ${time}`;
 }
 
 @Component({
@@ -97,6 +97,20 @@ function formatAnchorDisplay(anchorLocal: string): string {
           </button>
         </div>
       </div>
+
+      @if (showFollowLatest) {
+        <div class="follow-row">
+          <button class="follow-btn" [class.active]="followLatest"
+                  [title]="followLatest ? 'Anchor follows the newest data point' : 'Jump to the newest data point and keep following it'"
+                  (click)="toggleFollowLatest.emit()">
+            <mat-icon class="follow-icon">{{ followLatest ? 'lock_clock' : 'update' }}</mat-icon>
+            <span class="follow-label">Latest</span>
+            @if (latestLabel) {
+              <span class="follow-time">{{ latestLabel }}</span>
+            }
+          </button>
+        </div>
+      }
 
       @if (!anchorDateTimeLocal && !isMax) {
         <p class="hint">select exact date / time</p>
@@ -207,6 +221,31 @@ function formatAnchorDisplay(anchorLocal: string): string {
       opacity: 0.7;
       margin: 0;
     }
+    .follow-row { display: flex; justify-content: center; }
+    .follow-btn {
+      all: unset;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--mat-sys-on-surface);
+      box-sizing: border-box;
+      transition: background 120ms, border-color 120ms;
+    }
+    .follow-btn:hover:not(.active) {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    }
+    .follow-btn.active {
+      background: color-mix(in srgb, var(--mat-sys-primary) 12%, var(--mat-sys-surface));
+      border-color: color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+    }
+    .follow-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+    .follow-time { opacity: 0.7; }
     @media (max-width: 599px) {
       .anchor-btn { font-size: 11px; }
       .step-input { width: 36px; font-size: 11px; padding: 6px 2px; }
@@ -237,8 +276,14 @@ export class RangeFilterBarComponent implements OnInit {
   @Input() maxAnchorLocal?: string;
   @Input() leftPlusDisabled?: boolean;
   @Input() rightPlusDisabled?: boolean;
+  /** Chart tab wires this up; the Wallet tab leaves the control hidden. */
+  @Input() showFollowLatest = false;
+  @Input() followLatest = false;
+  /** Newest timestamp of the selected rows, as shown on the Latest chip. */
+  @Input() latestAnchorLocal?: string;
 
   @Output() presetChange = new EventEmitter<RangePreset>();
+  @Output() toggleFollowLatest = new EventEmitter<void>();
   @Output() anchorChange = new EventEmitter<string>();
   @Output() incLeft = new EventEmitter<void>();
   @Output() decLeft = new EventEmitter<void>();
@@ -256,6 +301,15 @@ export class RangeFilterBarComponent implements OnInit {
   get isMax(): boolean { return this.preset === 'MAX'; }
   get disableSides(): boolean { return this.isMax || !this.anchorDateTimeLocal; }
   get displayValue(): string { return formatAnchorDisplay(this.anchorDateTimeLocal); }
+
+  /** "2026-05-15T17:36" -> "15.05. 17:36" — the newest point in the current data. */
+  get latestLabel(): string {
+    const v = this.latestAnchorLocal || this.maxAnchorLocal;
+    if (!v) return '';
+    const [date, time] = v.split('T');
+    const [, m, d] = (date ?? '').split('-');
+    return m && d && time ? `${d}.${m}. ${time}` : '';
+  }
 
   ngOnInit(): void {
     this.bp.observe([Breakpoints.XSmall])

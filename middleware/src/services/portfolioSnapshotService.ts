@@ -1,6 +1,6 @@
 import { Logger } from "../core/logger";
 import { PortfolioRepo, type PortfolioRow } from "../data/portfolioRepo";
-import type { PortfolioSnapshotPayload, PortfolioSeries, PortfolioPoint } from "../app/portfolioTypes";
+import type { PortfolioSnapshotPayload, PortfolioSeries, PortfolioPoint, PortfolioLatest } from "../app/portfolioTypes";
 import type { RangeMeta } from "../app/snapshotTypes";
 
 type RangePreset = "1H" | "1D" | "1W" | "1M" | "1Y" | "MAX";
@@ -131,7 +131,19 @@ export class PortfolioSnapshotService {
       series.push({ key: y2Key, axis: "y2", points: buildPoints(rows, y2Key as keyof PortfolioRow) });
     }
 
+    // Newest row of the current window — always sent, regardless of the axis keys.
+    const lastRow = rows.length > 0 ? rows[rows.length - 1] : null;
+    const latest: PortfolioLatest | null = lastRow
+      ? {
+        timeIso: lastRow.timeIso,
+        value: lastRow.value,
+        profitP: lastRow.profitP,
+        profit: lastRow.profit,
+        purchase: lastRow.purchase,
+      }
+      : null;
+
     this.log.info("built portfolio snapshot", { y1Key, y2Key, rows: rows.length, preset: (range as any)?.preset ?? "none" });
-    return { y1Key, y2Key, series, rangeMeta };
+    return { y1Key, y2Key, series, rangeMeta, latest };
   }
 }

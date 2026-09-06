@@ -19,6 +19,8 @@
       (setY2)="onSetY2($event)"
       (setSplit)="onSetSplit($event)" />
 
+    <app-portfolio-summary-bar [latest]="latestValues()" />
+
     @if (!snapshot()) {
       <div class="empty-state">
         <p class="empty-msg">Waiting for wallet data…</p>
@@ -44,7 +46,10 @@
         [maxAnchorLocal]="maxAnchorLocal()"
         [leftPlusDisabled]="leftPlusDisabled()"
         [rightPlusDisabled]="rightPlusDisabled()"
+        [showFollowLatest]="true"
+        [followLatest]="followLatest()"
         (presetChange)="onPresetChange($event)"
+        (toggleFollowLatest)="onToggleFollowLatest()"
         (anchorChange)="onAnchorChange($event)"
         (incLeft)="onIncLeft()"
         (decLeft)="onDecLeft()"

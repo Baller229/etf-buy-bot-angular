@@ -23,6 +23,7 @@ import {
   selectPortfolioLeftSteps,
   selectPortfolioRightSteps,
   selectPortfolioSnapshot,
+  selectPortfolioFollowLatest,
 } from '../../../store';
 import type { PortfolioSnapshotPayload, RangePreset } from '../../../core/ws/ws.types';
 import {
@@ -37,6 +38,7 @@ import type { ChartData, ChartOptions } from 'chart.js';
 import { ChartPlotComponent } from '../../chart/chart-plot/chart-plot.component';
 import { AxisLegendComponent, type LegendItem } from '../../chart/axis-legend/axis-legend.component';
 import { PortfolioHeaderBarComponent } from '../portfolio-header-bar/portfolio-header-bar.component';
+import { PortfolioSummaryBarComponent } from '../portfolio-summary-bar/portfolio-summary-bar.component';
 import { RangeFilterBarComponent } from '../../chart/range-filter-bar/range-filter-bar.component';
 
 const COLUMN_LABELS: Record<string, string> = {
@@ -63,7 +65,7 @@ interface PortfolioDataset {
 
 @Component({
   selector: 'app-portfolio-tab',
-  imports: [ChartPlotComponent, AxisLegendComponent, PortfolioHeaderBarComponent, RangeFilterBarComponent],
+  imports: [ChartPlotComponent, AxisLegendComponent, PortfolioHeaderBarComponent, PortfolioSummaryBarComponent, RangeFilterBarComponent],
   templateUrl: './portfolio-tab.component.html',
   styleUrl: './portfolio-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,6 +85,8 @@ export class PortfolioTabComponent implements OnInit, OnDestroy {
   readonly leftSteps = toSignal(this.store.select(selectPortfolioLeftSteps), { initialValue: 0 });
   readonly rightSteps = toSignal(this.store.select(selectPortfolioRightSteps), { initialValue: 0 });
   readonly snapshot = toSignal(this.store.select(selectPortfolioSnapshot), { initialValue: null as PortfolioSnapshotPayload | null });
+  readonly followLatest = toSignal(this.store.select(selectPortfolioFollowLatest), { initialValue: false });
+  readonly latestValues = computed(() => this.snapshot()?.latest ?? null);
 
   readonly isMobile = signal(false);
   readonly isLandscapeCompact = signal(false);
@@ -351,6 +355,9 @@ export class PortfolioTabComponent implements OnInit, OnDestroy {
 
   onPresetChange(preset: RangePreset): void { this.store.dispatch(PortfolioActions.setRangePreset({ preset })); }
   onAnchorChange(value: string): void { this.store.dispatch(PortfolioActions.setAnchor({ value })); }
+  onToggleFollowLatest(): void {
+    this.store.dispatch(PortfolioActions.setFollowLatest({ follow: !this.followLatest() }));
+  }
   onIncLeft(): void { this.store.dispatch(PortfolioActions.incrementLeft()); }
   onDecLeft(): void { this.store.dispatch(PortfolioActions.decrementLeft()); }
   onSetLeft(steps: number): void { this.store.dispatch(PortfolioActions.setLeftSteps({ steps })); }

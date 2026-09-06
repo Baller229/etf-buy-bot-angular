@@ -43,3 +43,10 @@ tmp/
 connect.lock
 libpeerconnection.log
 typings/
+
+# C# / .NET — MultiQuote collector (build output, IDE and SVN metadata)
+MultiQuote/bin/
+MultiQuote/obj/
+MultiQuote/packages/
+MultiQuote/.vs/
+MultiQuote/.svn/

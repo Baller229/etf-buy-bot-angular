@@ -12,6 +12,11 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+
+  // Last resort on very short screens: scroll instead of clipping the controls.
+  @media (max-width: 599px) {
+    overflow-y: auto;
+  }
 }
 
 .plot-area {
@@ -19,10 +24,12 @@
   min-height: 220px;
   overflow: hidden;
 
+  // Phones: the plot absorbs whatever is left instead of claiming a fixed
+  // height, so the controls underneath always stay on screen.
   @media (max-width: 599px) {
-    flex: 0 0 auto;
-    height: clamp(240px, 45vh, 400px);
-    min-height: 0;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 150px;
   }
 }
 

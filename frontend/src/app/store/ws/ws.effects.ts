@@ -30,6 +30,7 @@ export class WsEffects {
             TableActions.initTable,
             RangeActions.setPreset,
             RangeActions.setAnchor,
+            RangeActions.anchorFollowedLatest,
             RangeActions.setLeftSteps,
             RangeActions.setRightSteps,
             RangeActions.incrementLeft,

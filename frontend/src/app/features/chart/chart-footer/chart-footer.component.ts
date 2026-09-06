@@ -25,7 +25,11 @@ import type { RangePreset } from '../../../core/ws/ws.types';
           [maxAnchorLocal]="maxAnchorLocal"
           [leftPlusDisabled]="leftPlusDisabled"
           [rightPlusDisabled]="rightPlusDisabled"
+          [showFollowLatest]="true"
+          [followLatest]="followLatest"
+          [latestAnchorLocal]="latestAnchorLocal"
           (presetChange)="presetChange.emit($event)"
+          (toggleFollowLatest)="toggleFollowLatest.emit()"
           (anchorChange)="anchorChange.emit($event)"
           (incLeft)="incLeft.emit()"
           (decLeft)="decLeft.emit()"
@@ -53,8 +57,11 @@ export class ChartFooterComponent {
   @Input() maxAnchorLocal?: string;
   @Input() leftPlusDisabled?: boolean;
   @Input() rightPlusDisabled?: boolean;
+  @Input() followLatest = false;
+  @Input() latestAnchorLocal?: string;
 
   @Output() toggleLegend = new EventEmitter<string>();
+  @Output() toggleFollowLatest = new EventEmitter<void>();
   @Output() presetChange = new EventEmitter<RangePreset>();
   @Output() anchorChange = new EventEmitter<string>();
   @Output() incLeft = new EventEmitter<void>();

@@ -27,6 +27,7 @@ export * from './portfolio/portfolio.actions';
 export * from './portfolio/portfolio.selectors';
 
 export { WsEffects } from './ws/ws.effects';
+export { RangeEffects } from './range/range.effects';
 export { PortfolioEffects } from './portfolio/portfolio.effects';
 
 export const appReducers: ActionReducerMap<AppState> = {
@@ -45,8 +46,8 @@ export function localStorageSyncReducer(
     keys: [
       { ui: ['darkMode', 'showWsInspector'] },
       { table: ['activeTableId', 'tables'] },
-      { range: ['rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
-      { portfolio: ['y1Key', 'y2Key', 'splitMode', 'rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps'] },
+      { range: ['rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps', 'followLatest'] },
+      { portfolio: ['y1Key', 'y2Key', 'splitMode', 'rangePreset', 'anchorDateTimeLocal', 'leftSteps', 'rightSteps', 'followLatest'] },
     ],
     rehydrate: true,
   })(reducer);
