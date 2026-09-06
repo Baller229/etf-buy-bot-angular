@@ -6,7 +6,8 @@ import { DataSnapshotService } from "./services/dataSnapshotService";
 import { PortfolioRepo } from "./data/portfolioRepo";
 import { PortfolioSnapshotService } from "./services/portfolioSnapshotService";
 import { CsvFileWatcher } from "./core/csvFileWatcher";
-import { DEFAULT_DATA_TIME_ZONE } from "./core/timeZone";
+import { csvTimeToUtcIso, DEFAULT_DATA_TIME_ZONE } from "./core/timeZone";
+import { Logger } from "./core/logger";
 
 const port = Number(process.env.PORT ?? 8083);
 const path = String(process.env.WS_PATH ?? "/ws");
@@ -35,6 +36,14 @@ const tableServices = {
     etf: { initTable: etfInitTableService, snapshot: etfSnapshotService },
     portfolioTickers: { initTable: portfolioTickersInitTableService, snapshot: portfolioTickersSnapshotService },
 };
+
+// Startup fingerprint: shows at a glance whether the CSV wall clock is being
+// converted, and with which zone. 17:35:57 in Berlin must come out as 15:35:57Z
+// in summer (16:35:57Z in winter).
+new Logger("app").info("csv time zone", {
+    timeZone,
+    sample: `2026.05.15_17:35:57 -> ${csvTimeToUtcIso("2026.05.15_17:35:57", timeZone)}`,
+});
 
 const server = new WsServer({ port, path }, tableServices, portfolioSnapshotService);
 server.start();
