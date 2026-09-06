@@ -50,3 +50,6 @@ MultiQuote/obj/
 MultiQuote/packages/
 MultiQuote/.vs/
 MultiQuote/.svn/
+
+# Generated CSV data — produced by the MultiQuote collector every few minutes
+data/*.csv
